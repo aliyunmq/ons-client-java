@@ -8,20 +8,21 @@ on:
 
 jobs:
   maven-build:
-    name: "${{ matrix.os }}, jdk-${{ matrix.jdk }}"
+    name: "${{ matrix.os }}, jdk-${{ matrix.jdk }}, ${{ matrix.distribution }}"
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
         os: [ubuntu-20.04, macos-11, windows-2022]
         jdk: [11, 17]
+        distribution: ["adopt", "temurin", "zulu"]
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-      - name: Set up JDK ${{ matrix.jdk }}
+      - name: Set up JDK ${{ matrix.jdk }} with ${{ matrix.distribution }} distribution
         uses: actions/setup-java@v2
         with:
           java-version: ${{ matrix.jdk }}
-          distribution: "adopt"
+          distribution: ${{ matrix.distribution }}
           cache: maven
       - name: Build with Maven
         run: mvn -B package --file pom.xml
