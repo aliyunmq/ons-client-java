@@ -1,0 +1,52 @@
+# Compiled class file
+*.class
+
+# Log file
+*.log
+
+# Build directories
+target/
+build/
+bin/
+out/
+dist/
+release/
+deploy/
+
+# Maven target directory
+*/target/
+*/target/**/*
+
+# IntelliJ IDEA files
+.idea/
+*.iml
+*.ipr
+*.iws
+
+# Eclipse files
+.metadata
+*.classpath
+*.project
+*.settings/
+*.launch
+
+# NetBeans files
+nbproject/private/
+build/
+nbbuild/
+dist/
+nbdist/
+nbactions.xml
+
+# Windows DS_Store files
+Desktop.ini
+Thumbs.db
+
+# Mac-specific files
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Maven plugin files
+log/
+*.log
