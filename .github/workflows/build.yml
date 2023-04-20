@@ -5,6 +5,7 @@ on:
   push:
     branches:
       - master
+
 jobs:
   maven-build:
     name: "${{ matrix.os }}, jdk-${{ matrix.jdk }}"
@@ -32,11 +33,16 @@ jobs:
       - uses: actions/checkout@v2
       - name: Collect build result
         run: |
-          if echo ${{ needs.maven-build.result }} | grep -E 'cancelled|failure' -o > null
-          then
-            echo "There are failed/cancelled builds"
-            exit 1 
-          else
-            echo "All builds are successful/skipped"
-            exit 0
-          fi
+          #!/bin/bash
+          # This script collects the result of the maven-build jobs
+          # It will check if any job was cancelled or failed
+          # If any cancelled or failed job is found, it will log a message and exit with a non-zero status code
+          # Otherwise, it will log a success message and exit with a zero status code
+          for job in "${{ needs.maven-build.Checkout }}"; do
+            if [[ "$job" == "cancelled" || "$job" == "failure" ]]; then
+              echo "There are failed/cancelled builds"
+              exit 1
+            fi
+          done
+          echo "All builds are successful/skipped"
+          exit 0
