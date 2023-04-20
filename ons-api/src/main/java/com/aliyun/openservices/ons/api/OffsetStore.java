@@ -1,6 +1,6 @@
 package com.aliyun.openservices.ons.api;
 
-import com.google.common.base.Optional;
+import java.util.Optional;
 
 public interface OffsetStore {
     /**
@@ -22,10 +22,10 @@ public interface OffsetStore {
     void updateOffset(TopicPartition partition, long offset);
 
     /**
-     * 读取指定分区的位点，如果位点不存在，请返回 {@link Optional#absent()}
+     * 读取指定分区的位点，如果位点不存在，请返回 {@link Optional#empty()}
      *
      * @param partition 指定的分区
-     * @return 指定分区的位点，不存在则返回 {@link Optional#absent()}
+     * @return 指定分区的位点，不存在则返回 {@link Optional#empty()}
      */
     Optional<Long> readOffset(TopicPartition partition);
 }

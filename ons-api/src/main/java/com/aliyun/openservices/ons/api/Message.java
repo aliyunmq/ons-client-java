@@ -2,8 +2,6 @@ package com.aliyun.openservices.ons.api;
 
 import java.io.Serializable;
 import java.util.Properties;
-import org.apache.rocketmq.client.message.MessageIdGenerator;
-import org.apache.rocketmq.utility.UtilAll;
 
 /**
  * 消息类. 一条消息由主题, 消息体以及可选的消息标签, 自定义附属键值对构成.
@@ -77,7 +75,7 @@ public class Message implements Serializable {
         this.systemProperties = new SystemProperties();
         this.systemProperties.setTag(tag);
         this.systemProperties.setKey(key);
-        this.systemProperties.setBornHost(UtilAll.hostName());
+        // this.systemProperties.setBornHost(UtilAll.hostName());
         reset();
     }
 
@@ -302,7 +300,7 @@ public class Message implements Serializable {
 
     private void reset() {
         this.systemProperties.setBornTimestamp(System.currentTimeMillis());
-        this.systemProperties.setMsgId(MessageIdGenerator.getInstance().next());
+        // this.systemProperties.setMsgId(MessageIdGenerator.getInstance().next());
     }
 
     /**
