@@ -24,4 +24,4 @@ This will compile the Java code and package it into a JAR file located in the ta
 
 ## License
 
-This project is licensed under the Apache License, Version 2.0. See the LICENSE file for details.
+[Apache License, Version 2.0](http://www.apache.org/licenses/LICENSE-2.0.html) Copyright (C) Apache Software Foundation
