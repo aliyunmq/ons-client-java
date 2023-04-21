@@ -15,8 +15,8 @@ import java.util.Properties;
 public class BatchConsumerBean implements BatchConsumer {
 
     /**
-     * <p>This field needs to be injected and specifies the properties that construct the {@code BatchConsumer} instance.
-     * For specific supported attributes, see {@link PropertyKeyConst}.</p>
+     * <p>This field needs to be injected and specifies the properties that construct the {@code BatchConsumer}
+     * instance. For specific supported attributes, see {@link PropertyKeyConst}.</p>
      * <p>需要注入该字段，指定构造 {@code BatchConsumer} 实例的属性，具体支持的属性详见 {@link PropertyKeyConst}。</p>
      *
      * @see BatchConsumerBean#setProperties(Properties)

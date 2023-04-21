@@ -47,7 +47,8 @@ public class OrderProducerBean implements OrderProducer {
     }
 
     /**
-     * Shuts down this {@code OrderProducer} instance. It is recommended to configure it as the destroy-method of the Bean.
+     * Shuts down this {@code OrderProducer} instance. It is recommended to configure it as the destroy-method of the
+     * Bean.
      * <p>关闭该 {@code OrderProducer} 实例，建议配置为 Bean 的 destroy-method。
      */
     @Override

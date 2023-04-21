@@ -34,7 +34,8 @@ public class TransactionProducerBean implements TransactionProducer {
     private TransactionProducer transactionProducer;
 
     /**
-     * Starts this {@code TransactionProducer} instance. It is recommended to configure it as the init-method of the Bean.
+     * Starts this {@code TransactionProducer} instance. It is recommended to configure it
+     * as the init-method of the Bean.
      * <p>启动该 {@code TransactionProducer} 实例，建议配置为 Bean 的 init-method。
      */
     @Override
