@@ -5,11 +5,13 @@ public class Subscription {
     private String expression;
 
     /**
-     * TAG or SQL92
-     * <br>if null, equals to TAG
+     * The type of the message tag or SQL92.
+     * <br>If it is null, it is equal to TAG.
      *
      * @see com.aliyun.openservices.ons.api.ExpressionType#TAG
      * @see com.aliyun.openservices.ons.api.ExpressionType#SQL92
+     * <p>消息标签或SQL92的类型。
+     * <br>如果为null，则相当于 TAG。
      */
     private String type;
 

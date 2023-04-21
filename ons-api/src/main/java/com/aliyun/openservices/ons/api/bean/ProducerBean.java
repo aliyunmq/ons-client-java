@@ -11,11 +11,14 @@ import java.util.Properties;
 import java.util.concurrent.ExecutorService;
 
 /**
- * {@code ProducerBean}用于将{@link Producer}集成至Spring Bean中
+ * This {@code ProducerBean} is used to integrate {@link Producer} into a Spring Bean.
+ * <p>{@code ProducerBean} 用于将 {@link Producer} 集成至 Spring Bean 中。
  */
 public class ProducerBean implements Producer {
     /**
-     * 需要注入该字段，指定构造{@code Producer}实例的属性，具体支持的属性详见{@link PropertyKeyConst}
+     * This field needs to be injected to specify the properties for constructing the {@code Producer} instance.
+     * For details about the supported properties, please refer to {@link PropertyKeyConst}.
+     * <p>需要注入该字段，指定构造{@code Producer}实例的属性，具体支持的属性详见{@link PropertyKeyConst}。
      *
      * @see ProducerBean#setProperties(Properties)
      */
@@ -23,7 +26,8 @@ public class ProducerBean implements Producer {
     private Producer producer;
 
     /**
-     * 启动该{@code Producer}实例，建议配置为Bean的init-method
+     * Starts this {@code Producer} instance. It is recommended to configure it as the init-method of the Bean.
+     * <p>启动该 {@code Producer} 实例，建议配置为 Bean 的 init-method。
      */
     @Override
     public void start() {
@@ -43,7 +47,8 @@ public class ProducerBean implements Producer {
     }
 
     /**
-     * 关闭该{@code Producer}实例，建议配置为Bean的destroy-method
+     * Shuts down this {@code Producer} instance. It is recommended to configure it as the destroy-method of the Bean.
+     * <p>关闭该 {@code Producer} 实例，建议配置为 Bean 的 destroy-method。
      */
     @Override
     public void shutdown() {
@@ -52,12 +57,10 @@ public class ProducerBean implements Producer {
         }
     }
 
-
     @Override
     public SendResult send(Message message) {
         return this.producer.send(message);
     }
-
 
     @Override
     public void sendOneway(Message message) {

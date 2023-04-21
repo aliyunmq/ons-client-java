@@ -3,17 +3,22 @@ package com.aliyun.openservices.ons.api.order;
 import com.aliyun.openservices.ons.api.Message;
 
 /**
- * 消息监听器，Consumer注册消息监听器来订阅消息
+ * <p>Message listener, consumers register the message listener to subscribe to messages.</p>
+ * <p>消息监听器，Consumer注册消息监听器来订阅消息。</p>
  */
 public interface MessageOrderListener {
     /**
-     * 消费消息接口，由应用来实现<br>
-     * 需要注意网络抖动等不稳定的情形可能会带来消息重复，对重复消息敏感的业务可对消息做幂等处理
+     * <p>Message consumption interface, to be implemented by the application.<br>
+     * Note that network jitter and other unstable situations may cause duplicate messages.</p>
+     * <p>消费消息接口，由应用实现。<br>
+     * 需要注意的是，网络抖动等不稳定情况可能导致重复的消息。</p>
      *
-     * @param message 消息
-     * @param context 消费上下文
-     * @return {@link OrderAction} 消费结果，如果应用抛出异常或者返回Null等价于返回Action.ReconsumeLater
-     * @see <a href="https://help.aliyun.com/document_detail/44397.html">如何做到消费幂等</a>
+     * @param message Message to be consumed. / 消息。
+     * @param context Consumption context. / 消费上下文。
+     * @return {@link OrderAction} Consumption result, if the application throws an exception or returns null,
+     * it is equivalent to returning Action.ReconsumeLater.
+     * @see <a href="https://help.aliyun.com/document_detail/44397.html">How to achieve consumption idempotence /
+     * 如何做到消费幂等</a>
      */
     OrderAction consume(final Message message, final ConsumeOrderContext context);
 }

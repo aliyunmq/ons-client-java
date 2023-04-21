@@ -9,11 +9,15 @@ import com.aliyun.openservices.ons.api.order.OrderProducer;
 import java.util.Properties;
 
 /**
- * {@code OrderProducerBean}用于将{@link OrderProducer}集成至Spring Bean中
+ * This {@code OrderProducerBean} is used to integrate {@link OrderProducer} into a Spring Bean.
+ * <p>{@code OrderProducerBean} 用于将 {@link OrderProducer} 集成至 Spring Bean 中。
  */
 public class OrderProducerBean implements OrderProducer {
+
     /**
-     * 需要注入该字段，指定构造{@code OrderProducer}实例的属性，具体支持的属性详见{@link PropertyKeyConst}
+     * This field needs to be injected to specify the properties for constructing the {@code OrderProducer}
+     * instance. For details about the supported properties, please refer to {@link PropertyKeyConst}.
+     * <p>需要注入该字段，指定构造{@code OrderProducer}实例的属性，具体支持的属性详见{@link PropertyKeyConst}
      *
      * @see OrderProducerBean#setProperties(Properties)
      */
@@ -22,7 +26,8 @@ public class OrderProducerBean implements OrderProducer {
     private OrderProducer orderProducer;
 
     /**
-     * 启动该{@code OrderProducer}实例，建议配置为Bean的init-method
+     * Starts this {@code OrderProducer} instance. It is recommended to configure it as the init-method of the Bean.
+     * <p>启动该 {@code OrderProducer} 实例，建议配置为 Bean 的 init-method。
      */
     @Override
     public void start() {
@@ -42,7 +47,9 @@ public class OrderProducerBean implements OrderProducer {
     }
 
     /**
-     * 关闭该{@code OrderProducer}实例，建议配置为Bean的destroy-method
+     * Shuts down this {@code OrderProducer} instance. It is recommended to configure it as the destroy-method of the
+     * Bean.
+     * <p>关闭该 {@code OrderProducer} 实例，建议配置为 Bean 的 destroy-method。
      */
     @Override
     public void shutdown() {

@@ -14,18 +14,22 @@ import java.util.Map.Entry;
 import java.util.Properties;
 
 /**
- * {@code ConsumerBean}用于将{@link Consumer}集成至Spring Bean中
+ * The {@code ConsumerBean} class is used to integrate the {@link Consumer} into Spring Beans.
+ * <p>{@code ConsumerBean}类用于将{@link Consumer}集成到Spring Bean中.</p>
  */
 public class ConsumerBean implements Consumer {
     /**
-     * 需要注入该字段，指定构造{@code Consumer}实例的属性，具体支持的属性详见{@link PropertyKeyConst}
+     * This field needs to be injected, specifying the properties to construct a {@code Consumer} instance.
+     * 具体支持的属性详见{@link PropertyKeyConst}
+     * <p>需要注入该字段，指定构造{@code Consumer}实例的属性。</p>
      *
      * @see ConsumerBean#setProperties(Properties)
      */
     private Properties properties;
 
     /**
-     * 通过注入该字段，在启动{@code Consumer}时完成Topic的订阅
+     * By injecting this field, the Topic subscription is completed when starting the {@code Consumer}.
+     * <p>通过注入该字段，在启动{@code Consumer}时完成Topic的订阅。</p>
      *
      * @see ConsumerBean#setSubscriptionTable(Map)
      */
@@ -34,7 +38,8 @@ public class ConsumerBean implements Consumer {
     private Consumer consumer;
 
     /**
-     * 启动该{@code Consumer}实例，建议配置为Bean的init-method
+     * Start the {@code Consumer} instance, it is recommended to configure this as the Bean's init-method.
+     * <p>启动该{@code Consumer}实例，建议配置为Bean的init-method。</p>
      */
     @Override
     public void start() {
@@ -50,14 +55,14 @@ public class ConsumerBean implements Consumer {
 
         for (Entry<Subscription, MessageListener> next : this.subscriptionTable.entrySet()) {
             if ("com.aliyun.openservices.ons.api.impl.notify.ConsumerImpl"
-                        .equals(this.consumer.getClass().getCanonicalName())
+                .equals(this.consumer.getClass().getCanonicalName())
                 && (next.getKey() instanceof SubscriptionExt)) {
                 SubscriptionExt subscription = (SubscriptionExt) next.getKey();
                 for (Method method : this.consumer.getClass().getMethods()) {
                     if ("subscribeNotify".equals(method.getName())) {
                         try {
                             method.invoke(consumer, subscription.getTopic(), subscription.getExpression(),
-                                          subscription.isPersistence(), next.getValue());
+                                subscription.isPersistence(), next.getValue());
                         } catch (Exception e) {
                             throw new ONSClientException("subscribeNotify invoke exception", e);
                         }
@@ -74,11 +79,11 @@ public class ConsumerBean implements Consumer {
                 } else if (ExpressionType.SQL92.name().equals(subscription.getType())) {
 
                     this.subscribe(subscription.getTopic(), MessageSelector.bySql(subscription.getExpression()),
-                                   next.getValue());
+                        next.getValue());
                 } else {
 
                     throw new ONSClientException(String.format("Expression type %s is unknown!",
-                                                               subscription.getType()));
+                        subscription.getType()));
                 }
             }
 
@@ -95,7 +100,8 @@ public class ConsumerBean implements Consumer {
     }
 
     /**
-     * 关闭该{@code Consumer}实例，建议配置为Bean的destroy-method
+     * Shutdown the {@code Consumer} instance, it is recommended to configure this as the Bean's destroy-method.
+     * <p>关闭该{@code Consumer}实例，建议配置为Bean的destroy-method。</p>
      */
     @Override
     public void shutdown() {

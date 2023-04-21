@@ -1,15 +1,18 @@
 package com.aliyun.openservices.ons.api.order;
 
 /**
- * 顺序消息消费结果
+ * <p>Enumeration of ordered message consumption results.</p>
+ * <p>顺序消息消费结果枚举。</p>
  */
 public enum OrderAction {
     /**
-     * 消费成功，继续消费下一条消息
+     * <p>Consumption is successful, continue consuming the next message.</p>
+     * <p>消费成功，继续消费下一条消息。</p>
      */
     Success,
     /**
-     * 消费失败，挂起当前队列
+     * <p>Consumption failed, suspend the current queue.</p>
+     * <p>消费失败，挂起当前队列。</p>
      */
     Suspend,
 }
