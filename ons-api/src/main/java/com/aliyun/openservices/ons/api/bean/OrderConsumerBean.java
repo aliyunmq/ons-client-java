@@ -1,3 +1,4 @@
+
 package com.aliyun.openservices.ons.api.bean;
 
 import com.aliyun.openservices.ons.api.MessageSelector;
@@ -11,18 +12,22 @@ import java.util.Map;
 import java.util.Properties;
 
 /**
- * {@code OrderConsumerBean}用于将{@link OrderConsumer}集成至Spring Bean中
+ * {@code OrderConsumerBean} is used to integrate {@link OrderConsumer} into Spring Bean.
+ * <p>{@code OrderConsumerBean}用于将{@link OrderConsumer}集成至Spring Bean中。
  */
 public class OrderConsumerBean implements OrderConsumer {
     /**
-     * 需要注入该字段，指定构造{@code OrderConsumer}实例的属性，具体支持的属性详见{@link PropertyKeyConst}
+     * Inject this field to specify the properties for constructing the {@code OrderConsumer} instance.
+     * See {@link PropertyKeyConst} for the supported properties.
+     * <p>需要注入该字段，指定构造{@code OrderConsumer}实例的属性，具体支持的属性详见{@link PropertyKeyConst}
      *
      * @see OrderConsumerBean#setProperties(Properties)
      */
     private Properties properties;
 
     /**
-     * 通过注入该字段，在启动{@code OrderConsumer}时完成Topic的订阅
+     * Inject this field to subscribe to the Topic when starting the {@code OrderConsumer}.
+     * <p>通过注入该字段，在启动{@code OrderConsumer}时完成Topic的订阅
      *
      * @see OrderConsumerBean#setSubscriptionTable(Map)
      */
@@ -41,7 +46,8 @@ public class OrderConsumerBean implements OrderConsumer {
     }
 
     /**
-     * 启动该{@code OrderConsumer}实例，建议配置为Bean的init-method
+     * Start the {@code OrderConsumer} instance. It is recommended to configure it as the Bean's init-method.
+     * <p>启动该{@code OrderConsumer}实例，建议配置为Bean的init-method
      */
     @Override
     public void start() {
@@ -70,7 +76,8 @@ public class OrderConsumerBean implements OrderConsumer {
     }
 
     /**
-     * 关闭该{@code OrderConsumer}实例，建议配置为Bean的destroy-method
+     * Close the {@code OrderConsumer} instance. It is recommended to configure it as the Bean's destroy-method.
+     * <p>关闭该{@code OrderConsumer}实例，建议配置为Bean的destroy-method
      */
     @Override
     public void shutdown() {
@@ -120,7 +127,7 @@ public class OrderConsumerBean implements OrderConsumer {
     }
 
     public void setSubscriptionTable(
-            final Map<Subscription, MessageOrderListener> subscriptionTable) {
+        final Map<Subscription, MessageOrderListener> subscriptionTable) {
         this.subscriptionTable = subscriptionTable;
     }
 }

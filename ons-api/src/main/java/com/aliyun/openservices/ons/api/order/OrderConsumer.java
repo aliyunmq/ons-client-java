@@ -4,7 +4,6 @@ import com.aliyun.openservices.ons.api.Admin;
 import com.aliyun.openservices.ons.api.MessageSelector;
 import com.aliyun.openservices.ons.api.OffsetStore;
 
-
 /**
  * 顺序消息消费者接口
  */

@@ -9,18 +9,23 @@ import java.util.Map;
 import java.util.Properties;
 
 /**
- * {@code BatchConsumerBean}用于将{@link BatchConsumer}集成至Spring Bean中
+ * <p>{@code BatchConsumerBean} is used to integrate {@link BatchConsumer} with Spring Bean.</p>
+ * <p>{@code BatchConsumerBean} 用于将 {@link BatchConsumer} 集成至 Spring Bean 中。</p>
  */
 public class BatchConsumerBean implements BatchConsumer {
+
     /**
-     * 需要注入该字段，指定构造{@code BatchConsumer}实例的属性，具体支持的属性详见{@link PropertyKeyConst}
+     * <p>This field needs to be injected and specifies the properties that construct the {@code BatchConsumer} instance.
+     * For specific supported attributes, see {@link PropertyKeyConst}.</p>
+     * <p>需要注入该字段，指定构造 {@code BatchConsumer} 实例的属性，具体支持的属性详见 {@link PropertyKeyConst}。</p>
      *
      * @see BatchConsumerBean#setProperties(Properties)
      */
     private Properties properties;
 
     /**
-     * 通过注入该字段，在启动{@code BatchConsumer}时完成Topic的订阅
+     * <p>By injecting this field, subscription of topic is completed when starting {@code BatchConsumer}.</p>
+     * <p>通过注入该字段，在启动 {@code BatchConsumer} 时完成 Topic 的订阅。</p>
      *
      * @see BatchConsumerBean#setSubscriptionTable(Map)
      */
@@ -39,7 +44,8 @@ public class BatchConsumerBean implements BatchConsumer {
     }
 
     /**
-     * 启动该{@code BatchConsumer}实例，建议配置为Bean的init-method
+     * <p>Start this {@code BatchConsumer} instance, and configure it as the initialization method of the Bean.</p>
+     * <p>启动该 {@code BatchConsumer} 实例，建议配置为 Bean 的 init-method。</p>
      */
     @Override
     public void start() {
@@ -68,7 +74,8 @@ public class BatchConsumerBean implements BatchConsumer {
     }
 
     /**
-     * 关闭该{@code BatchConsumer}实例，建议配置为Bean的destroy-method
+     * <p>Shutdown this {@code BatchConsumer} instance, and configure it as the destruction method of the Bean.</p>
+     * <p>关闭该 {@code BatchConsumer} 实例，建议配置为 Bean 的 destroy-method。</p>
      */
     @Override
     public void shutdown() {
@@ -105,8 +112,7 @@ public class BatchConsumerBean implements BatchConsumer {
         return subscriptionTable;
     }
 
-    public void setSubscriptionTable(
-            final Map<Subscription, BatchMessageListener> subscriptionTable) {
+    public void setSubscriptionTable(final Map<Subscription, BatchMessageListener> subscriptionTable) {
         this.subscriptionTable = subscriptionTable;
     }
 }

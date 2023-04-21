@@ -1,7 +1,8 @@
 package com.aliyun.openservices.ons.api.bean;
 
 /**
- * 订阅关系扩展类
+ * The subscription extended class.
+ * <p>订阅关系扩展类。
  */
 public class SubscriptionExt extends Subscription {
     private boolean persistence = true;
@@ -27,6 +28,6 @@ public class SubscriptionExt extends Subscription {
     @Override
     public String toString() {
         return "Subscription [topic=" + super.getTopic() + ", expression=" + super.getExpression()
-               + ", persistence=" + persistence + "]";
+            + ", persistence=" + persistence + "]";
     }
 }
