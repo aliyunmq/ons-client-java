@@ -39,7 +39,7 @@ jobs:
           # It will check if any job was cancelled or failed
           # If any cancelled or failed job is found, it will log a message and exit with a non-zero status code
           # Otherwise, it will log a success message and exit with a zero status code
-          for job in "${{ needs.maven-build.Checkout }}"; do
+          for job in "${{ needs.maven-build.result }}"; do
             if [[ "$job" == "cancelled" || "$job" == "failure" ]]; then
               echo "There are failed/cancelled builds"
               exit 1
