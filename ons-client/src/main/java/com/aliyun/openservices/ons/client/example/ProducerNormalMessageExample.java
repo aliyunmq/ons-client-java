@@ -5,10 +5,13 @@ import com.aliyun.openservices.ons.api.ONSFactory;
 import com.aliyun.openservices.ons.api.Producer;
 import com.aliyun.openservices.ons.api.PropertyKeyConst;
 import com.aliyun.openservices.ons.api.SendResult;
-import java.util.Date;
 import java.util.Properties;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ProducerNormalMessageExample {
+    private static final Logger logger = LoggerFactory.getLogger(ProducerNormalMessageExample.class);
+
     private ProducerNormalMessageExample() {
     }
 
@@ -46,12 +49,11 @@ public class ProducerNormalMessageExample {
                 SendResult sendResult = producer.send(msg);
                 // 同步发送消息，只要不抛异常就是成功。
                 if (sendResult != null) {
-                    System.out.println(new Date() + " Send mq message success. Topic is:" + msg.getTopic() + " msgId is: " + sendResult.getMessageId());
+                    logger.info("Send NORMAL message successfully, topic={}, messageId={}", msg.getTopic(), sendResult.getMessageId());
                 }
             } catch (Exception e) {
                 // 消息发送失败，需要进行重试处理，可重新发送这条消息或持久化这条数据进行补偿处理。
-                System.out.println(new Date() + " Send mq message failed. Topic is:" + msg.getTopic());
-                e.printStackTrace();
+                logger.error("Failed to send NORMAL message, topic={}", msg.getTopic(), e);
             }
         }
 
