@@ -8,10 +8,10 @@ import java.util.Properties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class PushConsumerExample {
-    private static final Logger logger = LoggerFactory.getLogger(PushConsumerExample.class);
+public class OrderPushConsumerExample {
+    private static final Logger logger = LoggerFactory.getLogger(OrderPushConsumerExample.class);
 
-    private PushConsumerExample() {
+    private OrderPushConsumerExample() {
     }
 
     public static void main(String[] args) {
@@ -27,18 +27,18 @@ public class PushConsumerExample {
         // 设置 TCP 接入域名，进入消息队列 RocketMQ 版控制台实例详情页面的接入点区域查看。
         properties.put(PropertyKeyConst.NAMESRV_ADDR, "yourNameSrvAddr");
         Consumer consumer = ONSFactory.createConsumer(properties);
-        // 订阅第一个 Topic 。
-        String topicA = "yourTopicA";
+        // 订阅第一个顺序 Topic 。
+        String orderTopicA = "yourOrderTopicA";
         // 订阅多个 Tag 。
-        consumer.subscribe(topicA, "TagA0||TagA1", (message, context) -> {
-            logger.info("Message received, topic={}, messageId={}", topicA, message.getMsgID());
+        consumer.subscribe(orderTopicA, "tagA0||tagA1", (message, context) -> {
+            logger.info("Message received, topic={}, messageId={}", orderTopicA, message.getMsgID());
             return Action.CommitMessage;
         });
 
-        // 订阅另外一个 Topic 。
-        String topicB = "yourTopicB";
-        consumer.subscribe(topicB, "tagB0||tagB1", (message, context) -> {
-            logger.info("Message received, topic={}, messageId={}", topicB, message.getMsgID());
+        // 定义另外一个顺序 Topic 。
+        String orderTopicB = "yourOrderTopicB";
+        consumer.subscribe(orderTopicB, "tagB0||tagB1", (message, context) -> {
+            logger.info("Message received, topic={}, messageId={}", orderTopicB, message.getMsgID());
             return Action.CommitMessage;
         });
 

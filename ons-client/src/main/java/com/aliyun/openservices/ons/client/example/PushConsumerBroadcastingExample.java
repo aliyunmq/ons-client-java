@@ -4,14 +4,15 @@ import com.aliyun.openservices.ons.api.Action;
 import com.aliyun.openservices.ons.api.Consumer;
 import com.aliyun.openservices.ons.api.ONSFactory;
 import com.aliyun.openservices.ons.api.PropertyKeyConst;
+import com.aliyun.openservices.ons.api.PropertyValueConst;
 import java.util.Properties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class PushConsumerExample {
-    private static final Logger logger = LoggerFactory.getLogger(PushConsumerExample.class);
+public class PushConsumerBroadcastingExample {
+    private static final Logger logger = LoggerFactory.getLogger(PushConsumerBroadcastingExample.class);
 
-    private PushConsumerExample() {
+    private PushConsumerBroadcastingExample() {
     }
 
     public static void main(String[] args) {
@@ -22,6 +23,8 @@ public class PushConsumerExample {
         properties.put(PropertyKeyConst.AccessKey, "yourAccessKey");
         // AccessKey Secret，阿里云身份验证密钥。
         properties.put(PropertyKeyConst.SecretKey, "yourSecretKey");
+        // 广播订阅方式设置。
+        properties.put(PropertyKeyConst.MessageModel, PropertyValueConst.BROADCASTING);
         // 设置发送超时时间，单位：毫秒。
         properties.setProperty(PropertyKeyConst.SendMsgTimeoutMillis, "3000");
         // 设置 TCP 接入域名，进入消息队列 RocketMQ 版控制台实例详情页面的接入点区域查看。

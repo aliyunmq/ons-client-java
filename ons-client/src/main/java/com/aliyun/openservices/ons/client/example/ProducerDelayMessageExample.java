@@ -43,7 +43,7 @@ public class ProducerDelayMessageExample {
             // 需要 Producer 与 Consumer 协商好一致的序列化和反序列化方式。
             "This is a DELAY message for RocketMQ".getBytes());
         // 设置代表消息的业务关键属性，请尽可能全局唯一。
-        // 以方便您在无法正常收到消息情况下，可通过消息队列RocketMQ版控制台查询消息并补发。
+        // 以方便您在无法正常收到消息情况下，可通过消息队列 RocketMQ 版控制台查询消息并补发。
         // 注意：不设置也不会影响消息正常收发。
         String key = "yourMessageKey";
         message.setKey(key);
