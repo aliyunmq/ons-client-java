@@ -50,8 +50,7 @@ public class ProducerNormalMessageExample {
             SendResult sendResult = producer.send(msg);
             String messageId = sendResult.getMessageId();
             logger.info("Send NORMAL message successfully, topic={}, messageId={}", topic, messageId);
-        } catch (
-            Exception e) {
+        } catch (Exception e) {
             // 消息发送失败，需要进行重试处理，可重新发送这条消息或持久化这条数据进行补偿处理。
             logger.error("Failed to send NORMAL message, topic={}", topic, e);
         }
