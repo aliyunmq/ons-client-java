@@ -23,7 +23,7 @@ public class ProducerFifoMessageExample {
         properties.put(PropertyKeyConst.SecretKey, "yourSecretKey");
         // 设置发送超时时间，单位：毫秒。
         properties.setProperty(PropertyKeyConst.SendMsgTimeoutMillis, "3000");
-        // 设置TCP接入域名，进入消息队列 RocketMQ 版控制台实例详情页面的接入点区域查看。
+        // 设置 TCP 接入域名，进入消息队列 RocketMQ 版控制台实例详情页面的接入点区域查看。
         properties.put(PropertyKeyConst.NAMESRV_ADDR, "yourNameSrvAddr");
         OrderProducer producer = ONSFactory.createOrderProducer(properties);
         // 在发送消息前，必须调用 start 方法来启动 Producer ，只需调用一次即可。
@@ -31,32 +31,30 @@ public class ProducerFifoMessageExample {
 
         String topic = "yourFifoTopic";
         String tag = "yourMessageTag";
-        // 循环发送消息。
-        Message msg = new Message(
-            // 普通消息所属的Topic，切勿使用普通消息的Topic来收发其他类型的消息。
+        Message message = new Message(
+            // 顺序消息所属的 Topic ，切勿使用顺序消息的 Topic 来收发其他类型的消息。
             topic,
-            // Message Tag可理解为Gmail中的标签，对消息进行再归类，方便Consumer指定过滤条件在消息队列RocketMQ版的服务器过滤。
-            // Tag的具体格式和设置方法，请参见Topic与Tag最佳实践。
+            // Message Tag 可理解为 Gmail 中的标签，对消息进行再归类，方便 Consumer 指定过滤条件在消息队列 RocketMQ 版的服务器过滤。
             tag,
-            // Message Body可以是任何二进制形式的数据，消息队列RocketMQ版不做任何干预。
-            // 需要Producer与Consumer协商好一致的序列化和反序列化方式。
-            "This is a FIFO message for ONS".getBytes());
+            // Message Body 可以是任何二进制形式的数据，消息队列 RocketMQ 版不做任何干预。
+            // 需要 Producer 与 Consumer 协商好一致的序列化和反序列化方式。
+            "This is a FIFO message for RocketMQ".getBytes());
         // 设置代表消息的业务关键属性，请尽可能全局唯一。
-        // 以方便您在无法正常收到消息情况下，可通过消息队列RocketMQ版控制台查询消息并补发。
+        // 以方便您在无法正常收到消息情况下，可通过消息队列 RocketMQ 版控制台查询消息并补发。
         // 注意：不设置也不会影响消息正常收发。
         String key = "yourMessageKey";
-        msg.setKey(key);
+        message.setKey(key);
 
-        // 分区顺序消息中区分不同分区的关键字段，Sharding Key与普通消息的key是完全不同的概念。
+        // 分区顺序消息中区分不同分区的关键字段，Sharding Key 与普通消息的 key 是完全不同的概念。
         // 全局顺序消息，该字段可以设置为任意非空字符串。
         String shardingKey = "yourShardingKey";
         try {
-            SendResult sendResult = producer.send(msg, shardingKey);
+            SendResult sendResult = producer.send(message, shardingKey);
             final String messageId = sendResult.getMessageId();
             logger.info("Send FIFO message successfully, topic={}, messageId={}", topic, messageId);
         } catch (Exception e) {
             // 消息发送失败，需要进行重试处理，可重新发送这条消息或持久化这条数据进行补偿处理。
-            logger.error("Failed to send FIFO message, topic={}", msg.getTopic(), e);
+            logger.error("Failed to send FIFO message, topic={}", message.getTopic(), e);
         }
 
         // 在应用退出前，销毁Producer对象。
