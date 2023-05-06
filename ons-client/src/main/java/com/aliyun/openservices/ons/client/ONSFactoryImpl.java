@@ -9,10 +9,10 @@ import com.aliyun.openservices.ons.api.order.OrderConsumer;
 import com.aliyun.openservices.ons.api.order.OrderProducer;
 import com.aliyun.openservices.ons.api.transaction.LocalTransactionChecker;
 import com.aliyun.openservices.ons.api.transaction.TransactionProducer;
+import java.util.Properties;
 import org.apache.rocketmq.client.java.impl.consumer.OrderConsumerImpl;
 import org.apache.rocketmq.client.java.impl.producer.ONSProducerImpl;
 import org.apache.rocketmq.client.java.impl.consumer.PushConsumerImpl;
-import java.util.Properties;
 
 public class ONSFactoryImpl implements ONSFactoryAPI {
     @Override
