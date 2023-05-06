@@ -1,10 +1,9 @@
-package com.aliyun.openservices.ons.client.rocketmq.impl;
+package org.apache.rocketmq.client.java.impl.consumer;
 
 import com.aliyun.openservices.ons.api.Consumer;
 import com.aliyun.openservices.ons.api.MessageListener;
 import com.aliyun.openservices.ons.api.MessageSelector;
 import com.aliyun.openservices.ons.api.OffsetStore;
-import com.aliyun.openservices.ons.client.rocketmq.PushConsumer;
 import java.util.Properties;
 
 public class PushConsumerImpl extends PushConsumer implements Consumer {

@@ -9,15 +9,15 @@ import com.aliyun.openservices.ons.api.order.OrderConsumer;
 import com.aliyun.openservices.ons.api.order.OrderProducer;
 import com.aliyun.openservices.ons.api.transaction.LocalTransactionChecker;
 import com.aliyun.openservices.ons.api.transaction.TransactionProducer;
-import com.aliyun.openservices.ons.client.rocketmq.impl.OrderConsumerImpl;
-import com.aliyun.openservices.ons.client.rocketmq.impl.ProducerImpl;
-import com.aliyun.openservices.ons.client.rocketmq.impl.PushConsumerImpl;
 import java.util.Properties;
+import org.apache.rocketmq.client.java.impl.consumer.OrderConsumerImpl;
+import org.apache.rocketmq.client.java.impl.consumer.PushConsumerImpl;
+import org.apache.rocketmq.client.java.impl.producer.ONSProducerImpl;
 
 public class ONSFactoryImpl implements ONSFactoryAPI {
     @Override
     public Producer createProducer(Properties properties) {
-        return new ProducerImpl(properties);
+        return new ONSProducerImpl(properties);
     }
 
     @Override
@@ -32,7 +32,7 @@ public class ONSFactoryImpl implements ONSFactoryAPI {
 
     @Override
     public OrderProducer createOrderProducer(Properties properties) {
-        return new ProducerImpl(properties);
+        return new ONSProducerImpl(properties);
     }
 
     @Override
@@ -42,7 +42,7 @@ public class ONSFactoryImpl implements ONSFactoryAPI {
 
     @Override
     public TransactionProducer createTransactionProducer(Properties properties, final LocalTransactionChecker checker) {
-        return new ProducerImpl(properties, checker);
+        return new ONSProducerImpl(properties, checker);
     }
 
     @Override
