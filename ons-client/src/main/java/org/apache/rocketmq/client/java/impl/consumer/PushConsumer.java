@@ -1,4 +1,4 @@
-package com.aliyun.openservices.ons.client.rocketmq;
+package org.apache.rocketmq.client.java.impl.consumer;
 
 import com.aliyun.openservices.ons.client.ClientAbstract;
 import java.util.Properties;
