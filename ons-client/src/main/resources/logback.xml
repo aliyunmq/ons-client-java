@@ -2,7 +2,7 @@
 <configuration debug="false">
     <!--  block debug output forcibly, ref: https://stackoverflow.com/questions/3257154/how-to-prevent-logback-from-outputting-its-own-status-at-the-start-of-every-log -->
     <statusListener class="ch.qos.logback.core.status.NopStatusListener"/>
-    <conversionRule conversionWord="pid" converterClass="org.apache.rocketmq.wrapper.logback.extensions.ProcessIdConverter"/>
+    <conversionRule conversionWord="pid" converterClass="org.apache.rocketmq.client.java.logging.ProcessIdConverter"/>
     <appender name="CustomConsoleAppender" class="org.apache.rocketmq.client.java.logging.CustomConsoleAppender">
         <encoder>
             <pattern>%yellow(%d{yyy-MM-dd HH:mm:ss,GMT+8}) %highlight(%-5p) %boldWhite([%pid]) %magenta([%t]) %boldGreen([%logger{12}#%M:%L]) - %m%n
