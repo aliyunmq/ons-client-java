@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration debug="false">
+    <!--  block debug output forcibly, ref: https://stackoverflow.com/questions/3257154/how-to-prevent-logback-from-outputting-its-own-status-at-the-start-of-every-log -->
+    <statusListener class="ch.qos.logback.core.status.NopStatusListener"/>
+    <conversionRule conversionWord="pid" converterClass="org.apache.rocketmq.wrapper.logback.extensions.ProcessIdConverter"/>
+    <appender name="CustomConsoleAppender" class="org.apache.rocketmq.client.java.logging.CustomConsoleAppender">
+        <encoder>
+            <pattern>%yellow(%d{yyy-MM-dd HH:mm:ss,GMT+8}) %highlight(%-5p) %boldWhite([%pid]) %magenta([%t]) %boldGreen([%logger{12}#%M:%L]) - %m%n
+            </pattern>
+            <charset class="java.nio.charset.Charset">UTF-8</charset>
+        </encoder>
+    </appender>
+    <appender name="DefaultAppenderInner" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <append>true</append>
+        <File>
+            ${ons.client.logRoot:-${user.home}${file.separator}logs${file.separator}ons}${file.separator}ons-client.log
+        </File>
+        <rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">
+            <FileNamePattern>
+                ${ons.client.logRoot:-${user.home}${file.separator}logs${file.separator}ons}${file.separator}other_days${file.separator}ons-client-%i.log.gz
+            </FileNamePattern>
+            <minIndex>1</minIndex>
+            <maxIndex>${ons.client.logFileMaxIndex:-10}</maxIndex>
+        </rollingPolicy>
+        <triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
+            <maxFileSize>64MB</maxFileSize>
+        </triggeringPolicy>
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <pattern>%d{yyy-MM-dd HH:mm:ss,GMT+8} %-5p [%pid] [%t] [%logger{12}#%M:%L] - %m%n</pattern>
+            <charset class="java.nio.charset.Charset">UTF-8</charset>
+        </encoder>
+    </appender>
+    <appender name="DefaultAppender" class="ch.qos.logback.classic.AsyncAppender">
+        <appender-ref ref="DefaultAppenderInner"/>
+    </appender>
+    <root level="${ons.client.logLevel:-info}">
+        <appender-ref ref="CustomConsoleAppender"/>
+        <appender-ref ref="DefaultAppender" additivity="false"/>
+    </root>
+    <!-- ref: https://github.com/grpc/grpc-java/issues/3033 -->
+    <!--    <logger name="io.grpc" level="warn"/>-->
+    <!--    <logger name="org.apache.rocketmq.shaded.io.grpc" level="warn"/>-->
+</configuration>
