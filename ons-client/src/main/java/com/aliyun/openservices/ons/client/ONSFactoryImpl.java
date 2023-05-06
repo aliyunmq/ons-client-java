@@ -11,8 +11,8 @@ import com.aliyun.openservices.ons.api.transaction.LocalTransactionChecker;
 import com.aliyun.openservices.ons.api.transaction.TransactionProducer;
 import java.util.Properties;
 import org.apache.rocketmq.client.java.impl.consumer.OrderConsumerImpl;
-import org.apache.rocketmq.client.java.impl.producer.ONSProducerImpl;
 import org.apache.rocketmq.client.java.impl.consumer.PushConsumerImpl;
+import org.apache.rocketmq.client.java.impl.producer.ONSProducerImpl;
 
 public class ONSFactoryImpl implements ONSFactoryAPI {
     @Override
