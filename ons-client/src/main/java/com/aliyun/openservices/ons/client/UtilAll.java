@@ -1,5 +1,7 @@
 package com.aliyun.openservices.ons.client;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import com.aliyun.openservices.ons.api.Message;
 import com.aliyun.openservices.ons.api.exception.ONSClientException;
 import java.util.Properties;
@@ -7,9 +9,6 @@ import java.util.regex.Pattern;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.rocketmq.client.apis.ClientServiceProvider;
 import org.apache.rocketmq.client.apis.message.MessageBuilder;
-import org.apache.rocketmq.client.java.message.MessageImpl;
-
-import static com.google.common.base.Preconditions.checkNotNull;
 
 public class UtilAll {
     public static final String DEFAULT_CHARSET = "UTF-8";

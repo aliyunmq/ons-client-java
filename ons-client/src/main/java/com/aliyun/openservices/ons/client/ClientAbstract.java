@@ -15,9 +15,8 @@ import org.slf4j.LoggerFactory;
 public class ClientAbstract implements Admin {
     private static final Logger log = LoggerFactory.getLogger(ClientAbstract.class);
     protected final ClientConfiguration clientConfiguration;
-    private volatile SessionCredentials sessionCredentials;
-
     protected final AtomicBoolean started = new AtomicBoolean(false);
+    private volatile SessionCredentials sessionCredentials;
 
     public ClientAbstract(Properties properties) {
         final String ramRole = properties.getProperty(PropertyKeyConst.RAM_ROLE_NAME);
