@@ -4,6 +4,7 @@ import com.aliyun.openservices.ons.api.Admin;
 import com.aliyun.openservices.ons.api.PropertyKeyConst;
 import com.aliyun.openservices.ons.api.exception.ONSClientException;
 import java.util.Properties;
+import java.util.concurrent.atomic.AtomicBoolean;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.rocketmq.client.apis.ClientConfiguration;
 import org.apache.rocketmq.client.apis.SessionCredentials;
@@ -14,6 +15,7 @@ import org.slf4j.LoggerFactory;
 public class ClientAbstract implements Admin {
     private static final Logger log = LoggerFactory.getLogger(ClientAbstract.class);
     protected final ClientConfiguration clientConfiguration;
+    protected final AtomicBoolean started = new AtomicBoolean(false);
     private volatile SessionCredentials sessionCredentials;
 
     public ClientAbstract(Properties properties) {
