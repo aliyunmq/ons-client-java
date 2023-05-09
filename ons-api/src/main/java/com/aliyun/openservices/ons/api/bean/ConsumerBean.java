@@ -127,11 +127,6 @@ public class ConsumerBean implements Consumer {
     }
 
     @Override
-    public void rateLimit(String topic, double permitsPerSecond) {
-        this.consumer.rateLimit(topic, permitsPerSecond);
-    }
-
-    @Override
     public void unsubscribe(String topic) {
         if (null == this.consumer) {
             throw new ONSClientException("unsubscribe must be called after consumerBean started");
