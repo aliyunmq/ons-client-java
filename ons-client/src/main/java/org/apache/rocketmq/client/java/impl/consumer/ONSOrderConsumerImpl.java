@@ -6,9 +6,9 @@ import com.aliyun.openservices.ons.api.order.MessageOrderListener;
 import com.aliyun.openservices.ons.api.order.OrderConsumer;
 import java.util.Properties;
 
-public class OrderConsumerImpl extends PushConsumer implements OrderConsumer {
+public class ONSOrderConsumerImpl extends ONSPushConsumer implements OrderConsumer {
 
-    public OrderConsumerImpl(final Properties properties) {
+    public ONSOrderConsumerImpl(final Properties properties) {
         super(properties);
     }
 
