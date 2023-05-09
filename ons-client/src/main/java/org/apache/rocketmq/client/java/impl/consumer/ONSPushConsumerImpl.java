@@ -47,8 +47,8 @@ public class ONSPushConsumerImpl extends ONSPushConsumer implements Consumer {
         try {
             if (this.started.compareAndSet(true, false)) {
                 log.info("Begin to shutdown the ONS push consumer, clientId={}", clientId);
-                this.pushConsumer.startAsync().awaitTerminated();
-                log.info("Shutdown ONS push consumer successfully");
+                this.pushConsumer.stopAsync().awaitTerminated();
+                log.info("Shutdown ONS push consumer successfully, clientId={}", clientId);
                 return;
             }
             log.info("ONS push consumer has been shutdown before, clientId={}", clientId);

@@ -48,12 +48,4 @@ public interface OrderConsumer extends Admin {
      * @param listener 消息回调监听器
      */
     void subscribe(final String topic, final MessageSelector selector, final MessageOrderListener listener);
-
-    /**
-     * 针对单机的消费限流，顺序消费者的单机消费限流对本地重试消息是透明的
-     *
-     * @param topic            被限流的 topic
-     * @param permitsPerSecond topic 被限流的每秒消费速率
-     */
-    void rateLimit(String topic, double permitsPerSecond);
 }
