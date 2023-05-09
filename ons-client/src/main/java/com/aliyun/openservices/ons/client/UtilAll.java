@@ -42,7 +42,8 @@ public class UtilAll {
         final Collection<String> keys = impl.getKeys();
         final String messageGroup = impl.getMessageGroup().isPresent() ? impl.getMessageGroup().get() : null;
         final int reconsumeTimes = impl.getDeliveryAttempt() - 1;
-        final Long deliveryTimestamp = impl.getDeliveryTimestamp().isPresent() ? impl.getDeliveryTimestamp().get() : null;
+        final Long deliveryTimestamp = impl.getDeliveryTimestamp().isPresent() ?
+            impl.getDeliveryTimestamp().get() : null;
         final String bornHost = impl.getBornHost();
         final long bornTimestamp = impl.getBornTimestamp();
 

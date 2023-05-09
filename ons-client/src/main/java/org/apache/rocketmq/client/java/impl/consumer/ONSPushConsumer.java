@@ -8,7 +8,6 @@ import java.util.Properties;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.rocketmq.client.apis.consumer.ConsumeResult;
 import org.apache.rocketmq.client.apis.consumer.MessageListener;
-import org.apache.rocketmq.client.apis.message.MessageView;
 import org.apache.rocketmq.client.java.misc.ClientId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
