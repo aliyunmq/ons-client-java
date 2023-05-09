@@ -109,11 +109,6 @@ public class OrderConsumerBean implements OrderConsumer {
         this.orderConsumer.setOffsetStore(offsetStore);
     }
 
-    @Override
-    public void rateLimit(String topic, double permitsPerSecond) {
-        this.orderConsumer.rateLimit(topic, permitsPerSecond);
-    }
-
     public Properties getProperties() {
         return properties;
     }
