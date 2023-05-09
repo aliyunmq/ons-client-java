@@ -53,12 +53,12 @@ public class ClientAbstract implements Admin {
 
     @Override
     public boolean isStarted() {
-        return false;
+        return started.get();
     }
 
     @Override
     public boolean isClosed() {
-        return false;
+        return !isStarted();
     }
 
     @Override

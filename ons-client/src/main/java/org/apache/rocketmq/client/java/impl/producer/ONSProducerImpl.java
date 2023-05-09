@@ -29,6 +29,8 @@ import java.util.concurrent.TimeoutException;
 import net.javacrumbs.futureconverter.java8guava.FutureConverter;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.rocketmq.client.apis.producer.SendReceipt;
+import org.apache.rocketmq.client.java.misc.ClientId;
+import org.apache.rocketmq.client.java.misc.ExecutorServices;
 import org.apache.rocketmq.client.java.misc.ThreadFactoryImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -65,23 +67,44 @@ public class ONSProducerImpl extends ClientAbstract implements Producer, OrderPr
 
     @Override
     public void start() {
+        final ClientId clientId = producer.getClientId();
         try {
             if (this.started.compareAndSet(false, true)) {
-                log.info("Begin to start the ONS producer");
+                log.info("Begin to start the ONS producer, clientId={}", clientId);
                 this.producer.startAsync().awaitRunning();
-                log.info("ONS producer starts successfully");
+                log.info("ONS producer starts successfully, clientId={}", clientId);
                 return;
             }
-            log.warn("ONS producer has been started before");
+            log.warn("ONS producer has been started before, clientId={}", clientId);
         } catch (Throwable t) {
-            log.error("Failed to start the ONS producer");
+            log.error("Failed to start the ONS producer, clientId={}", clientId);
             throw new ONSClientException(t);
         }
     }
 
     @Override
-    public SendResult send(Message message) {
-        final CompletableFuture<SendReceipt> future0 = producer.sendAsync(UtilAll.convertMessage(message));
+    public void shutdown() {
+        final ClientId clientId = producer.getClientId();
+        try {
+            if (this.started.compareAndSet(true, false)) {
+                log.info("Begin to shutdown the ONS producer, clientId={}", clientId);
+                this.producer.stopAsync().awaitTerminated();
+                if (!ExecutorServices.awaitTerminated(sendCallbackExecutor)) {
+                    log.error("[Bug] Timeout to shutdown the ONS send callback worker, clientId={}", clientId);
+                    return;
+                }
+                log.info("Shutdown ONS producer successfully, clientId={}", clientId);
+                return;
+            }
+            log.warn("ONS producer has been shutdown before, clientId={}", clientId);
+        } catch (Throwable t) {
+            log.error("Failed to shutdown the ONS producer, clientId={}", clientId);
+            throw new ONSClientException(t);
+        }
+    }
+
+    public SendResult send(org.apache.rocketmq.client.apis.message.Message message) {
+        final CompletableFuture<SendReceipt> future0 = producer.sendAsync(message);
         final ListenableFuture<SendReceipt> future = FutureConverter.toListenableFuture(future0);
         final ScheduledExecutorService scheduler = producer.getClientManager().getScheduler();
         Futures.withTimeout(future, DEFAULT_SEND_MSG_TIMEOUT_MILLIS, TimeUnit.MILLISECONDS, scheduler);
@@ -91,6 +114,11 @@ public class ONSProducerImpl extends ClientAbstract implements Producer, OrderPr
         } catch (TimeoutException | InterruptedException | ExecutionException t) {
             throw new ONSClientException(t);
         }
+    }
+
+    @Override
+    public SendResult send(Message message) {
+        return send(UtilAll.convertMessage(message));
     }
 
     @Override
@@ -128,7 +156,7 @@ public class ONSProducerImpl extends ClientAbstract implements Producer, OrderPr
 
     @Override
     public SendResult send(Message message, String shardingKey) {
-        return null;
+        return send(UtilAll.convertMessage(message, shardingKey));
     }
 
     @Override

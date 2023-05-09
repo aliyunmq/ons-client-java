@@ -34,14 +34,6 @@ public interface Consumer extends Admin {
     void setOffsetStore(OffsetStore offsetStore);
 
     /**
-     * 针对单机的消费限流。
-     *
-     * @param topic            被限流的 topic
-     * @param permitsPerSecond topic 被限流的每秒消费速率
-     */
-    void rateLimit(String topic, double permitsPerSecond);
-
-    /**
      * 取消某个topic订阅
      *
      * @param topic 要取消的主题.

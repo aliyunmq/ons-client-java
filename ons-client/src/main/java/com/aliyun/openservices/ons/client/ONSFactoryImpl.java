@@ -10,8 +10,8 @@ import com.aliyun.openservices.ons.api.order.OrderProducer;
 import com.aliyun.openservices.ons.api.transaction.LocalTransactionChecker;
 import com.aliyun.openservices.ons.api.transaction.TransactionProducer;
 import java.util.Properties;
-import org.apache.rocketmq.client.java.impl.consumer.OrderConsumerImpl;
-import org.apache.rocketmq.client.java.impl.consumer.PushConsumerImpl;
+import org.apache.rocketmq.client.java.impl.consumer.ONSOrderConsumerImpl;
+import org.apache.rocketmq.client.java.impl.consumer.ONSPushConsumerImpl;
 import org.apache.rocketmq.client.java.impl.producer.ONSProducerImpl;
 
 public class ONSFactoryImpl implements ONSFactoryAPI {
@@ -22,7 +22,7 @@ public class ONSFactoryImpl implements ONSFactoryAPI {
 
     @Override
     public Consumer createConsumer(Properties properties) {
-        return new PushConsumerImpl(properties);
+        return new ONSPushConsumerImpl(properties);
     }
 
     @Override
@@ -37,7 +37,7 @@ public class ONSFactoryImpl implements ONSFactoryAPI {
 
     @Override
     public OrderConsumer createOrderedConsumer(Properties properties) {
-        return new OrderConsumerImpl(properties);
+        return new ONSOrderConsumerImpl(properties);
     }
 
     @Override
