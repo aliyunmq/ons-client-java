@@ -104,7 +104,7 @@ public class ONSOrderConsumerImpl extends ONSPushConsumer implements OrderConsum
                 expression = new FilterExpression(selector.getSubExpression(), FilterExpressionType.SQL92);
         }
         try {
-            pushConsumer.subscribe(topic, expression);
+            pushConsumer.subscriptionExpressions.put(topic, expression);
         } catch (Throwable t) {
             throw new ONSClientException(t);
         }
