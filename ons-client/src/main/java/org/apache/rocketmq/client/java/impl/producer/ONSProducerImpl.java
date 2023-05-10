@@ -107,6 +107,7 @@ public class ONSProducerImpl extends ClientAbstract implements Producer, OrderPr
             if (this.started.compareAndSet(true, false)) {
                 log.info("Begin to shutdown the ONS producer, clientId={}", clientId);
                 this.producer.stopAsync().awaitTerminated();
+                sendCallbackExecutor.shutdown();
                 if (!ExecutorServices.awaitTerminated(sendCallbackExecutor)) {
                     log.error("[Bug] Timeout to shutdown the ONS send callback worker, clientId={}", clientId);
                     return;
