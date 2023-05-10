@@ -11,6 +11,7 @@ import com.aliyun.openservices.ons.api.order.OrderProducer;
 import com.aliyun.openservices.ons.api.transaction.LocalTransactionChecker;
 import com.aliyun.openservices.ons.api.transaction.LocalTransactionExecuter;
 import com.aliyun.openservices.ons.api.transaction.TransactionProducer;
+import com.aliyun.openservices.ons.api.transaction.TransactionStatus;
 import com.aliyun.openservices.ons.client.ClientAbstract;
 import com.aliyun.openservices.ons.client.UtilAll;
 import com.google.common.util.concurrent.FutureCallback;
@@ -29,6 +30,9 @@ import java.util.concurrent.TimeoutException;
 import net.javacrumbs.futureconverter.java8guava.FutureConverter;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.rocketmq.client.apis.producer.SendReceipt;
+import org.apache.rocketmq.client.apis.producer.Transaction;
+import org.apache.rocketmq.client.apis.producer.TransactionChecker;
+import org.apache.rocketmq.client.apis.producer.TransactionResolution;
 import org.apache.rocketmq.client.java.misc.ClientId;
 import org.apache.rocketmq.client.java.misc.ExecutorServices;
 import org.apache.rocketmq.client.java.misc.ThreadFactoryImpl;
@@ -46,11 +50,30 @@ public class ONSProducerImpl extends ClientAbstract implements Producer, OrderPr
     private final ProducerImpl producer;
 
     public ONSProducerImpl(final Properties properties) {
+        this(properties, null);
+    }
+
+    public ONSProducerImpl(final Properties properties, final LocalTransactionChecker localChecker) {
         super(properties);
-        this.producer = new ProducerImpl(clientConfiguration, new HashSet<>(), 3, null);
-        final String sendMessageTimeoutMillisProp = properties.getProperty(PropertyKeyConst.SendMsgTimeoutMillis);
-        this.sendMessageTimeoutMillis = StringUtils.isNoneBlank(sendMessageTimeoutMillisProp) ?
-            Long.parseLong(sendMessageTimeoutMillisProp) : DEFAULT_SEND_MSG_TIMEOUT_MILLIS;
+        TransactionChecker checker = null;
+        if (null != localChecker) {
+            checker = messageView -> {
+                final TransactionStatus status = localChecker.check(UtilAll.convertMessage(messageView));
+                switch (status) {
+                    case CommitTransaction:
+                        return TransactionResolution.COMMIT;
+                    case RollbackTransaction:
+                        return TransactionResolution.ROLLBACK;
+                    case Unknow:
+                    default:
+                        return TransactionResolution.UNKNOWN;
+                }
+            };
+        }
+        this.producer = new ProducerImpl(clientConfiguration, new HashSet<>(), 3, checker);
+        final String sendMsgTimeoutMillisProp = properties.getProperty(PropertyKeyConst.SendMsgTimeoutMillis);
+        this.sendMessageTimeoutMillis = StringUtils.isNoneBlank(sendMsgTimeoutMillisProp) ?
+            Long.parseLong(sendMsgTimeoutMillisProp) : DEFAULT_SEND_MSG_TIMEOUT_MILLIS;
         this.sendCallbackExecutor = new ThreadPoolExecutor(
             Runtime.getRuntime().availableProcessors(),
             Runtime.getRuntime().availableProcessors(),
@@ -58,11 +81,6 @@ public class ONSProducerImpl extends ClientAbstract implements Producer, OrderPr
             TimeUnit.SECONDS,
             new LinkedBlockingQueue<>(),
             new ThreadFactoryImpl("SendCallbackWorker"));
-    }
-
-    public ONSProducerImpl(final Properties properties, final LocalTransactionChecker localChecker) {
-        this(properties);
-        // TODO
     }
 
     @Override
@@ -161,6 +179,39 @@ public class ONSProducerImpl extends ClientAbstract implements Producer, OrderPr
 
     @Override
     public SendResult send(Message message, LocalTransactionExecuter executer, Object arg) {
-        return null;
+        final Transaction transaction = producer.beginTransaction();
+        final org.apache.rocketmq.client.apis.message.Message msg = UtilAll.convertMessage(message);
+        if (null == executer) {
+            throw new ONSClientException("Local executor is null unexpectedly");
+        }
+        SendResult sendResult;
+        try {
+            final SendReceipt sendReceipt = producer.send(msg, transaction);
+            sendResult = new SendResult(message.getTopic(), sendReceipt.getMessageId().toString());
+        } catch (Throwable t) {
+            throw new ONSClientException(t);
+        }
+        TransactionStatus status = null;
+        try {
+            status = executer.execute(message, arg);
+            switch (status) {
+                case CommitTransaction:
+                    transaction.commit();
+                    break;
+                case RollbackTransaction:
+                    transaction.rollback();
+                    break;
+                default:
+                    break;
+            }
+        } catch (Throwable t) {
+            // dirty way to make it compatible with 1.x sdk.
+            log.info("Exception raised while executing local executer and message", t);
+        }
+        if (TransactionStatus.RollbackTransaction.equals(status)) {
+            // dirty way to make it compatible with 1.x sdk.
+            throw new ONSClientException("local transaction branch return rollback");
+        }
+        return sendResult;
     }
 }
