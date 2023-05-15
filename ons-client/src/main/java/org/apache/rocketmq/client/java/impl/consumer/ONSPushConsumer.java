@@ -1,5 +1,6 @@
 package org.apache.rocketmq.client.java.impl.consumer;
 
+import com.aliyun.openservices.ons.api.OffsetStore;
 import com.aliyun.openservices.ons.api.PropertyKeyConst;
 import com.aliyun.openservices.ons.api.exception.ONSClientException;
 import com.aliyun.openservices.ons.client.ClientAbstract;
@@ -26,6 +27,7 @@ public class ONSPushConsumer extends ClientAbstract {
     private static final int DEFAULT_CONSUMPTION_THREADS_AMOUNT = 20;
     private static final int CONSUMPTION_THREADS_MAX_AMOUNT = 1000;
     protected final PushConsumerImpl pushConsumer;
+    protected OffsetStore offsetStore = null;
 
     public ONSPushConsumer(Properties properties) {
         super(properties);
@@ -97,5 +99,4 @@ public class ONSPushConsumer extends ClientAbstract {
             throw new ONSClientException(t);
         }
     }
-
 }
