@@ -4,8 +4,6 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 import com.aliyun.openservices.ons.api.MessageSelector;
 import com.aliyun.openservices.ons.api.OffsetStore;
-import com.aliyun.openservices.ons.api.PropertyKeyConst;
-import com.aliyun.openservices.ons.api.PropertyValueConst;
 import com.aliyun.openservices.ons.api.exception.ONSClientException;
 import com.aliyun.openservices.ons.api.order.ConsumeOrderContext;
 import com.aliyun.openservices.ons.api.order.MessageOrderListener;
@@ -26,11 +24,8 @@ public class ONSOrderConsumerImpl extends ONSPushConsumer implements OrderConsum
 
     public ONSOrderConsumerImpl(final Properties properties) {
         super(properties);
-        final String messageModel = properties.getProperty(PropertyKeyConst.MessageModel,
-            PropertyValueConst.DEFAULT_MESSAGE_MODEL);
-        final MessageModel model = MessageModel.valueOf(messageModel);
         // Broadcast consumption by order consumers will degenerate into unordered consumption.
-        pushConsumer.getPushConsumerSettings().fifo = model.equals(MessageModel.CLUSTERING);
+        pushConsumer.getPushConsumerSettings().fifo = messageModel.equals(MessageModel.CLUSTERING);
     }
 
     @Override
