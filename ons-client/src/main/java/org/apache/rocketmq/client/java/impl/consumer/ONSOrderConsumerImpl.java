@@ -4,8 +4,6 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 import com.aliyun.openservices.ons.api.MessageSelector;
 import com.aliyun.openservices.ons.api.OffsetStore;
-import com.aliyun.openservices.ons.api.PropertyKeyConst;
-import com.aliyun.openservices.ons.api.PropertyValueConst;
 import com.aliyun.openservices.ons.api.exception.ONSClientException;
 import com.aliyun.openservices.ons.api.order.ConsumeOrderContext;
 import com.aliyun.openservices.ons.api.order.MessageOrderListener;

@@ -72,8 +72,8 @@ public class ONSPushConsumer extends ClientAbstract {
         if (MessageModel.CLUSTERING.equals(this.messageModel)) {
             // message listener here will be overwritten.
             MessageListener messageListener = messageView -> ConsumeResult.SUCCESS;
-            this.pushConsumer = new PushConsumerImpl(clientConfiguration, consumerGroup, new HashMap<>(), messageListener,
-                maxCachedMessagesQuantity, maxCachedMessageSizeInMib * 1024 * 1024,
+            this.pushConsumer = new PushConsumerImpl(clientConfiguration, consumerGroup, new HashMap<>(),
+                messageListener, maxCachedMessagesQuantity, maxCachedMessageSizeInMib * 1024 * 1024,
                 consumptionThreadsAmount);
             this.pullConsumer = null;
         } else {
