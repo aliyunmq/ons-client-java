@@ -78,7 +78,7 @@ public class ONSPullConsumerImpl extends ClientAbstract implements PullConsumer 
 
         this.pullConsumer = new PullConsumerImpl(clientConfiguration, consumerGroup, autoCommit,
             Duration.ofMillis(autoCommitIntervalMillis), maxCachedMessageAmount, Integer.MAX_VALUE,
-            1024 * 1024 * maxCachedMessageSizeInMib);
+            Integer.MAX_VALUE, 1024 * 1024 * maxCachedMessageSizeInMib);
     }
 
     @Override
