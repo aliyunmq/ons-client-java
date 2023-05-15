@@ -1,5 +1,7 @@
 package org.apache.rocketmq.client.java.impl.consumer;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import com.aliyun.openservices.ons.api.Action;
 import com.aliyun.openservices.ons.api.ConsumeContext;
 import com.aliyun.openservices.ons.api.Consumer;
@@ -107,7 +109,7 @@ public class ONSPushConsumerImpl extends ONSPushConsumer implements Consumer {
 
     @Override
     public void setOffsetStore(OffsetStore offsetStore) {
-
+        this.offsetStore = checkNotNull(offsetStore, "OffsetStore is null, please set it");
     }
 
     @Override
