@@ -141,14 +141,18 @@ public class ONSPullConsumerImpl extends ClientAbstract implements PullConsumer 
 
     @Override
     public void registerTopicPartitionChangedListener(String topic, TopicPartitionChangeListener callback) {
-        pullConsumer.registerMessageQueueChangeListenerByTopic(topic, (topic1, messageQueues) -> {
-            Set<TopicPartition> topicPartitions = new HashSet<>();
-            for (MessageQueue queue : messageQueues) {
-                final ONSTopicPartition partition = new ONSTopicPartition((MessageQueueImpl) queue);
-                topicPartitions.add(partition);
-            }
-            callback.onChanged(topicPartitions);
-        });
+        try {
+            pullConsumer.registerMessageQueueChangeListenerByTopic(topic, (topic1, messageQueues) -> {
+                Set<TopicPartition> topicPartitions = new HashSet<>();
+                for (MessageQueue queue : messageQueues) {
+                    final ONSTopicPartition partition = new ONSTopicPartition((MessageQueueImpl) queue);
+                    topicPartitions.add(partition);
+                }
+                callback.onChanged(topicPartitions);
+            });
+        } catch (Throwable t) {
+            throw new ONSClientException(t);
+        }
     }
 
     @Override
