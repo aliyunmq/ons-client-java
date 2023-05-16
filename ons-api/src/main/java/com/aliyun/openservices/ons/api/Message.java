@@ -306,14 +306,14 @@ public class Message implements Serializable {
     /**
      * @return 该消息所属的 Partition
      */
-    @Deprecated
     public TopicPartition getTopicPartition() {
+        // TODO
         throw new UnsupportedOperationException();
     }
 
     @Override
     public String toString() {
         return "Message [topic=" + topic + ", systemProperties=" + systemProperties + ", userProperties="
-               + userProperties + ", bodyLength=" + (body != null ? body.length : 0) + "]";
+            + userProperties + ", bodyLength=" + (body != null ? body.length : 0) + "]";
     }
 }

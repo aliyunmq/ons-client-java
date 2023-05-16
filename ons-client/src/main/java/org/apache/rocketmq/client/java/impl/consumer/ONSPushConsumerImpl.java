@@ -190,6 +190,8 @@ public class ONSPushConsumerImpl extends ONSPushConsumer implements Consumer {
                                 listener.consume(message, context);
                             } catch (Throwable t) {
                                 log.error("Exception raised while consuming message, clientId={}", clientId, t);
+                            } finally {
+                                pullConsumer.updateOffset(message.getTopicPartition(), message.getOffset());
                             }
                         });
                     }

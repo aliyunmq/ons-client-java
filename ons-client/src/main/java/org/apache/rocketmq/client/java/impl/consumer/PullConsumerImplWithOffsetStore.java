@@ -3,6 +3,7 @@ package org.apache.rocketmq.client.java.impl.consumer;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import com.aliyun.openservices.ons.api.OffsetStore;
+import com.aliyun.openservices.ons.api.TopicPartition;
 import java.time.Duration;
 import java.util.Optional;
 import org.apache.rocketmq.client.apis.ClientConfiguration;
@@ -33,6 +34,13 @@ public class PullConsumerImplWithOffsetStore extends PullConsumerImpl {
         }
         final ONSTopicPartition partition = new ONSTopicPartition(mq);
         return offsetStore.readOffset(partition);
+    }
+
+    public void updateOffset(TopicPartition topicPartition, long offset) {
+        if (null == offsetStore) {
+            return;
+        }
+        offsetStore.updateOffset(topicPartition, offset);
     }
 
     void tryPullMessageByMessageQueueImmediately(MessageQueueImpl mq, FilterExpression filterExpression) {
