@@ -300,15 +300,13 @@ public class Message implements Serializable {
 
     private void reset() {
         this.systemProperties.setBornTimestamp(System.currentTimeMillis());
-        // this.systemProperties.setMsgId(MessageIdGenerator.getInstance().next());
     }
 
     /**
      * @return 该消息所属的 Partition
      */
     public TopicPartition getTopicPartition() {
-        // TODO
-        throw new UnsupportedOperationException();
+        return new TopicPartition(topic, systemProperties.getPartition());
     }
 
     @Override

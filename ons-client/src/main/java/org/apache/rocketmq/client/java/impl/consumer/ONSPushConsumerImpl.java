@@ -16,8 +16,10 @@ import java.util.Properties;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.rocketmq.client.apis.consumer.ConsumeResult;
 import org.apache.rocketmq.client.apis.consumer.FilterExpression;
+import org.apache.rocketmq.client.apis.message.MessageQueue;
 import org.apache.rocketmq.client.apis.message.MessageView;
 import org.apache.rocketmq.client.java.misc.ExecutorServices;
+import org.apache.rocketmq.client.java.route.MessageQueueImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -166,8 +168,21 @@ public class ONSPushConsumerImpl extends ONSPushConsumer implements Consumer {
 
     @Override
     public void unsubscribe(String topic) {
-        pushConsumer.unsubscribe(topic);
-        // TODO
+        if (MessageModel.CLUSTERING.equals(this.messageModel)) {
+            pushConsumer.unsubscribe(topic);
+            return;
+        }
+        synchronized (pullConsumer) {
+            final Map<MessageQueueImpl, FilterExpression> subscriptions = pullConsumer.getSubscriptions();
+            Map<MessageQueue, FilterExpression> newSubscriptions = new HashMap<>();
+            for (MessageQueueImpl mq : subscriptions.keySet()) {
+                if (mq.getTopic().equals(topic)) {
+                    continue;
+                }
+                newSubscriptions.put(mq, newSubscriptions.get(mq));
+            }
+            pullConsumer.assign(newSubscriptions);
+        }
     }
 
     class MessagePollingTask implements Runnable {
