@@ -2,6 +2,7 @@ package com.aliyun.openservices.ons.client;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
+import com.aliyun.openservices.ons.api.Constants;
 import com.aliyun.openservices.ons.api.ExpressionType;
 import com.aliyun.openservices.ons.api.Message;
 import com.aliyun.openservices.ons.api.MessageAccessor;
@@ -19,6 +20,7 @@ import org.apache.rocketmq.client.apis.consumer.FilterExpressionType;
 import org.apache.rocketmq.client.apis.message.MessageBuilder;
 import org.apache.rocketmq.client.apis.message.MessageView;
 import org.apache.rocketmq.client.java.message.MessageViewImpl;
+import org.apache.rocketmq.client.java.route.MessageQueueImpl;
 
 public class UtilAll {
     public static final String DEFAULT_CHARSET = "UTF-8";
@@ -42,6 +44,10 @@ public class UtilAll {
             return new FilterExpression(selector.getSubExpression());
         }
         return new FilterExpression(selector.getSubExpression(), FilterExpressionType.SQL92);
+    }
+
+    public static String brokerNameQueueIdToPartition(String brokerName, int queueId) {
+        return brokerName + Constants.TOPIC_PARTITION_SEPARATOR + queueId;
     }
 
     public static Message convertMessage(MessageView messageView) {
@@ -70,6 +76,8 @@ public class UtilAll {
             systemProperties.setStartDeliverTime(deliveryTimestamp);
         }
         systemProperties.setPartitionOffset(impl.getOffset());
+        final MessageQueueImpl mq = impl.getMessageQueue();
+        systemProperties.setPartition(UtilAll.brokerNameQueueIdToPartition(mq.getBroker().getName(), mq.getQueueId()));
         final Properties userProperties = new Properties();
         userProperties.putAll(impl.getProperties());
         return MessageAccessor.message(messageView.getTopic(), body, systemProperties, userProperties);

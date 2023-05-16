@@ -12,6 +12,7 @@ public class SystemProperties implements Serializable {
     private String bornHost;
     private long startDeliverTime;
     private long partitionOffset;
+    private String partition;
 
     public SystemProperties() {
         this.tag = "";
@@ -91,18 +92,27 @@ public class SystemProperties implements Serializable {
         this.partitionOffset = partitionOffset;
     }
 
+    public void setPartition(String partition) {
+        this.partition = partition;
+    }
+
+    public String getPartition() {
+        return partition;
+    }
+
     @Override
     public String toString() {
         return "SystemProperties{" +
-               "tag='" + tag + '\'' +
-               ", key='" + key + '\'' +
-               ", msgId='" + msgId + '\'' +
-               ", shardingKey='" + shardingKey + '\'' +
-               ", reconsumeTimes=" + reconsumeTimes +
-               ", bornTimestamp=" + bornTimestamp +
-               ", bornHost='" + bornHost + '\'' +
-               ", startDeliverTime=" + startDeliverTime +
-               ", consumeOffset=" + partitionOffset +
-               '}';
+            "tag='" + tag + '\'' +
+            ", key='" + key + '\'' +
+            ", msgId='" + msgId + '\'' +
+            ", shardingKey='" + shardingKey + '\'' +
+            ", reconsumeTimes=" + reconsumeTimes +
+            ", bornTimestamp=" + bornTimestamp +
+            ", bornHost='" + bornHost + '\'' +
+            ", startDeliverTime=" + startDeliverTime +
+            ", partitionOffset=" + partitionOffset +
+            ", brokerName=" + partition +
+            '}';
     }
 }

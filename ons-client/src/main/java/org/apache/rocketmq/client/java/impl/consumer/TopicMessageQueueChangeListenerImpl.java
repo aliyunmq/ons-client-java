@@ -26,39 +26,41 @@ public class TopicMessageQueueChangeListenerImpl implements TopicMessageQueueCha
     }
 
     @Override
-    public synchronized void onChanged(String topic, Set<MessageQueue> messageQueues) {
-        final ClientId clientId = pullConsumer.getClientId();
-        Map<MessageQueue, FilterExpression> latestSubscriptions = new HashMap<>();
-        Map<MessageQueueImpl, FilterExpression> subscriptions = pullConsumer.getSubscriptions();
-        Set<MessageQueue> addedMqs = new HashSet<>();
-        for (MessageQueue mq : messageQueues) {
-            final FilterExpression expression = filterExpressionTable.get(topic);
-            if (null == expression) {
-                log.error("Expression doesn't exist, topic={}, clientId={}", topic, clientId);
-                return;
+    public void onChanged(String topic, Set<MessageQueue> messageQueues) {
+        synchronized (pullConsumer) {
+            final ClientId clientId = pullConsumer.getClientId();
+            Map<MessageQueue, FilterExpression> latestSubscriptions = new HashMap<>();
+            Map<MessageQueueImpl, FilterExpression> subscriptions = pullConsumer.getSubscriptions();
+            Set<MessageQueue> addedMqs = new HashSet<>();
+            for (MessageQueue mq : messageQueues) {
+                final FilterExpression expression = filterExpressionTable.get(topic);
+                if (null == expression) {
+                    log.error("Expression doesn't exist, topic={}, clientId={}", topic, clientId);
+                    return;
+                }
+                latestSubscriptions.put(mq, expression);
+                if (!subscriptions.containsKey((MessageQueueImpl) mq)) {
+                    addedMqs.add(mq);
+                }
             }
-            latestSubscriptions.put(mq, expression);
-            if (!subscriptions.containsKey((MessageQueueImpl) mq)) {
-                addedMqs.add(mq);
-            }
-        }
-        pullConsumer.assign(latestSubscriptions);
-        for (MessageQueue mq : addedMqs) {
-            final Optional<Long> optionalOffset = pullConsumer.readOffset((MessageQueueImpl) mq);
-            if (!optionalOffset.isPresent()) {
-                try {
-                    pullConsumer.seekToEnd(mq);
-                } catch (Throwable t) {
-                    log.error("Failed to seek to the latest offset, mq={}, clientId={}", mq, clientId, t);
+            pullConsumer.assign(latestSubscriptions);
+            for (MessageQueue mq : addedMqs) {
+                final Optional<Long> optionalOffset = pullConsumer.readOffset((MessageQueueImpl) mq);
+                if (!optionalOffset.isPresent()) {
+                    try {
+                        pullConsumer.seekToEnd(mq);
+                    } catch (Throwable t) {
+                        log.error("Failed to seek to the latest offset, mq={}, clientId={}", mq, clientId, t);
+                        continue;
+                    }
                     continue;
                 }
-                continue;
-            }
-            final Long offset = optionalOffset.get();
-            try {
-                pullConsumer.seek(mq, offset);
-            } catch (Throwable t) {
-                log.error("Failed to seek offset, mq={}, offset={}, clientId={}", mq, offset, clientId, t);
+                final Long offset = optionalOffset.get();
+                try {
+                    pullConsumer.seek(mq, offset);
+                } catch (Throwable t) {
+                    log.error("Failed to seek offset, mq={}, offset={}, clientId={}", mq, offset, clientId, t);
+                }
             }
         }
     }
