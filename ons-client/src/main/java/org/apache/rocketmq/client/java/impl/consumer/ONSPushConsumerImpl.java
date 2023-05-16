@@ -9,21 +9,15 @@ import com.aliyun.openservices.ons.api.MessageSelector;
 import com.aliyun.openservices.ons.api.OffsetStore;
 import com.aliyun.openservices.ons.api.exception.ONSClientException;
 import com.aliyun.openservices.ons.client.UtilAll;
-import java.time.Duration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Properties;
-import java.util.Set;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.rocketmq.client.apis.consumer.ConsumeResult;
 import org.apache.rocketmq.client.apis.consumer.FilterExpression;
-import org.apache.rocketmq.client.apis.consumer.TopicMessageQueueChangeListener;
-import org.apache.rocketmq.client.apis.message.MessageQueue;
 import org.apache.rocketmq.client.apis.message.MessageView;
-import org.apache.rocketmq.client.java.misc.ClientId;
-import org.apache.rocketmq.client.java.route.MessageQueueImpl;
+import org.apache.rocketmq.client.java.misc.ExecutorServices;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -88,20 +82,77 @@ public class ONSPushConsumerImpl extends ONSPushConsumer implements Consumer {
 
     @Override
     public void start() {
-        super.start();
-        if (MessageModel.BROADCASTING.equals(this.messageModel)) {
-            assert pullConsumer != null;
-            final ClientId clientId = pullConsumer.getClientId();
-            for (Map.Entry<String, FilterExpression> entry : filterExpressionTable.entrySet()) {
-                final String topic = entry.getKey();
-                try {
-                    final TopicMessageQueueChangeListenerImpl listener = new TopicMessageQueueChangeListenerImpl();
-                    pullConsumer.registerMessageQueueChangeListenerByTopic(topic, listener);
-                } catch (Throwable t) {
-                    log.error("Failed to register message queue listener, clientId={}", clientId, t);
+        // For clustering consumption mode.
+        if (MessageModel.CLUSTERING.equals(this.messageModel)) {
+            try {
+                if (this.started.compareAndSet(false, true)) {
+                    log.info("Begin to start the ONS push consumer[clustering], clientId={}", clientId);
+                    this.pushConsumer.startAsync().awaitRunning();
+                    log.info("ONS push consumer[clustering] starts successfully, clientId={}", clientId);
+                    return;
                 }
+                log.warn("ONS push consumer[clustering] has been started before, clientId={}", clientId);
+                return;
+            } catch (Throwable t) {
+                log.error("Failed to start the ONS push consumer[clustering], clientId={}", clientId);
+                throw new ONSClientException(t);
             }
-            this.messagePollingExecutor.submit(new MessagePollingTask());
+        }
+        // For broadcasting consumption mode.
+        try {
+            if (!this.started.compareAndSet(false, true)) {
+                log.warn("ONS push consumer[broadcasting] has been started before, clientId={}", clientId);
+                return;
+            }
+            log.info("Begin to start the ONS push consumer[broadcasting], clientId={}", clientId);
+            this.pullConsumer.startAsync().awaitRunning();
+            log.info("ONS push consumer[broadcasting] starts successfully, clientId={}", clientId);
+        } catch (Throwable t) {
+            log.error("Failed to start the ONS push consumer[broadcasting], clientId={}", clientId);
+            throw new ONSClientException(t);
+        }
+        for (Map.Entry<String, FilterExpression> entry : filterExpressionTable.entrySet()) {
+            final String topic = entry.getKey();
+            try {
+                final TopicMessageQueueChangeListenerImpl listener = new TopicMessageQueueChangeListenerImpl(
+                    pullConsumer, filterExpressionTable);
+                pullConsumer.registerMessageQueueChangeListenerByTopic(topic, listener);
+            } catch (Throwable t) {
+                log.error("Failed to register message queue listener, clientId={}", clientId, t);
+            }
+        }
+        this.messagePollingExecutor.submit(new MessagePollingTask());
+    }
+
+    public void shutdown() {
+        // For clustering consumption mode.
+        if (MessageModel.CLUSTERING.equals(this.messageModel)) {
+            try {
+                if (this.started.compareAndSet(true, false)) {
+                    log.info("Begin to shutdown the ONS push consumer[clustering], clientId={}", clientId);
+                    this.pushConsumer.stopAsync().awaitTerminated();
+                    log.info("Shutdown ONS push consumer[clustering] successfully, clientId={}", clientId);
+                    return;
+                }
+                log.warn("ONS push consumer[clustering] has been shutdown before, clientId={}", clientId);
+                return;
+            } catch (Throwable t) {
+                log.error("Failed to shutdown the ONS push consumer[clustering], clientId={}", clientId, t);
+            }
+        }
+        // For broadcasting consumption mode.
+        try {
+            if (this.started.compareAndSet(true, false)) {
+                log.info("Begin to shutdown the ONS push consumer[broadcasting], clientId={}", clientId);
+                this.pullConsumer.stopAsync().awaitTerminated();
+                messagePollingExecutor.shutdown();
+                ExecutorServices.awaitTerminated(messagePollingExecutor);
+                log.info("Shutdown ONS push consumer[broadcasting] successfully, clientId={}", clientId);
+                return;
+            }
+            log.warn("ONS push consumer[broadcasting] has been shutdown before, clientId={}", clientId);
+        } catch (Throwable t) {
+            log.error("Failed to shutdown the ONS push consumer[clustering], clientId={}", clientId, t);
         }
     }
 
@@ -116,52 +167,15 @@ public class ONSPushConsumerImpl extends ONSPushConsumer implements Consumer {
     @Override
     public void unsubscribe(String topic) {
         pushConsumer.unsubscribe(topic);
-    }
-
-    class TopicMessageQueueChangeListenerImpl implements TopicMessageQueueChangeListener {
-        @Override
-        public void onChanged(String topic, Set<MessageQueue> messageQueues) {
-            assert pullConsumer != null;
-            final ClientId clientId = pullConsumer.getClientId();
-            Map<MessageQueue, FilterExpression> filterExpressions = new HashMap<>();
-            for (MessageQueue mq : messageQueues) {
-                final FilterExpression expression = filterExpressionTable.get(topic);
-                if (null == expression) {
-                    log.error("Expression doesn't exist, topic={}, clientId={}", topic, clientId);
-                    return;
-                }
-                filterExpressions.put(mq, expression);
-            }
-            pullConsumer.assign(filterExpressions);
-            for (MessageQueue mq : messageQueues) {
-                final Optional<Long> optionalOffset = pullConsumer.readOffset((MessageQueueImpl) mq);
-                if (!optionalOffset.isPresent()) {
-                    try {
-                        pullConsumer.seekToEnd(mq);
-                    } catch (Throwable t) {
-                        log.error("Failed to seek to the latest offset, mq={}, clientId={}", mq, clientId, t);
-                        continue;
-                    }
-                    continue;
-                }
-                final Long offset = optionalOffset.get();
-                try {
-                    pullConsumer.seek(mq, offset);
-                } catch (Throwable t) {
-                    log.error("Failed to seek offset, mq={}, offset={}, clientId={}", mq, offset, clientId, t);
-                }
-            }
-        }
+        // TODO
     }
 
     class MessagePollingTask implements Runnable {
         @Override
         public void run() {
-            assert pullConsumer != null;
-            final ClientId clientId = pullConsumer.getClientId();
             while (started.get()) {
                 try {
-                    final List<MessageView> messageViews = pullConsumer.poll(Duration.ofSeconds(3));
+                    final List<MessageView> messageViews = pullConsumer.poll(MESSAGE_BROADCASTING_POLLING_DURATION);
                     for (MessageView messageView : messageViews) {
                         final String topic = messageView.getTopic();
                         final MessageListener listener = messageListenerTable.get(topic);

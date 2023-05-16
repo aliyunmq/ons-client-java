@@ -17,12 +17,9 @@ import org.apache.rocketmq.client.apis.consumer.FilterExpression;
 import org.apache.rocketmq.client.apis.consumer.MessageListener;
 import org.apache.rocketmq.client.java.misc.ClientId;
 import org.apache.rocketmq.client.java.misc.ThreadFactoryImpl;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class ONSPushConsumer extends ClientAbstract {
-    private static final Logger log = LoggerFactory.getLogger(ONSPushConsumer.class);
-
+    protected static final Duration MESSAGE_BROADCASTING_POLLING_DURATION = Duration.ofSeconds(3);
     private static final int MAX_CACHED_MESSAGES_QUANTITY = 50000;
     private static final int MIN_CACHED_MESSAGES_QUANTITY = 100;
     private static final int DEFAULT_CACHED_MESSAGES_QUANTITY = 5000;
@@ -37,6 +34,7 @@ public class ONSPushConsumer extends ClientAbstract {
     protected final Map<String, FilterExpression> filterExpressions;
     protected final PushConsumerImpl pushConsumer;
     protected final PullConsumerImplWithOffsetStore pullConsumer;
+    protected final ClientId clientId;
     protected final ThreadPoolExecutor messagePollingExecutor;
     protected final ThreadPoolExecutor polledMessageConsumptionExecutor;
 
@@ -81,84 +79,20 @@ public class ONSPushConsumer extends ClientAbstract {
         this.messageModel = MessageModel.valueOf(messageModelProp);
         this.filterExpressions = new HashMap<>();
 
-        if (MessageModel.CLUSTERING.equals(this.messageModel)) {
-            // message listener here will be overwritten.
-            MessageListener messageListener = messageView -> ConsumeResult.SUCCESS;
-            this.pushConsumer = new PushConsumerImpl(clientConfiguration, consumerGroup, new HashMap<>(),
-                messageListener, maxCachedMessagesQuantity, maxCachedMessageSizeInMib * 1024 * 1024,
-                consumptionThreadsAmount);
-            this.pullConsumer = null;
-        } else {
-            this.pushConsumer = null;
-            this.pullConsumer = new PullConsumerImplWithOffsetStore(clientConfiguration, consumerGroup, false,
-                Duration.ofSeconds(5), maxCachedMessagesQuantity, Integer.MAX_VALUE,
-                maxCachedMessageSizeInMib * 1024 * 1024, Integer.MAX_VALUE);
-        }
+        // Message listener here will be overwritten.
+        MessageListener messageListener = messageView -> ConsumeResult.SUCCESS;
+        this.pushConsumer = new PushConsumerImpl(clientConfiguration, consumerGroup, new HashMap<>(),
+            messageListener, maxCachedMessagesQuantity, maxCachedMessageSizeInMib * 1024 * 1024,
+            consumptionThreadsAmount);
+        // For broadcasting consumption mode
+        this.pullConsumer = new PullConsumerImplWithOffsetStore(clientConfiguration, consumerGroup, false,
+            Duration.ofSeconds(5), maxCachedMessagesQuantity, Integer.MAX_VALUE,
+            maxCachedMessageSizeInMib * 1024 * 1024, Integer.MAX_VALUE);
+
+        this.clientId = MessageModel.CLUSTERING.equals(this.messageModel) ? pushConsumer.getClientId() :
+            pullConsumer.getClientId();
+
         this.messagePollingExecutor = new ThreadPoolExecutor(1, 1, 60,
             TimeUnit.SECONDS, new LinkedBlockingQueue<>(), new ThreadFactoryImpl("MessagePolling"));
-    }
-
-    @Override
-    public void start() {
-        if (MessageModel.CLUSTERING.equals(this.messageModel)) {
-            final ClientId clientId = pushConsumer.getClientId();
-            try {
-                if (this.started.compareAndSet(false, true)) {
-                    log.info("Begin to start the ONS push consumer in {} mode, clientId={}", messageModel, clientId);
-                    this.pushConsumer.startAsync().awaitRunning();
-                    log.info("ONS push consumer in {} mode starts successfully, clientId={}", messageModel, clientId);
-                    return;
-                }
-                log.warn("ONS push consumer in {} mode has been started before, clientId={}", messageModel, clientId);
-            } catch (Throwable t) {
-                log.error("Failed to start the ONS push consumer in {} mode, clientId={}", messageModel, clientId);
-                throw new ONSClientException(t);
-            }
-        }
-        final ClientId clientId = pullConsumer.getClientId();
-        try {
-            if (this.started.compareAndSet(false, true)) {
-                log.info("Begin to start the ONS push consumer in {} mode, clientId={}", messageModel, clientId);
-                this.pullConsumer.startAsync().awaitRunning();
-                log.info("ONS push consumer in {} mode starts successfully, clientId={}", messageModel, clientId);
-                return;
-            }
-            log.warn("ONS push consumer in {} mode has been started before, clientId={}", messageModel, clientId);
-        } catch (Throwable t) {
-            log.error("Failed to start the ONS push consumer in {} mode, clientId={}", messageModel, clientId);
-            throw new ONSClientException(t);
-        }
-    }
-
-    @Override
-    public void shutdown() {
-        if (MessageModel.CLUSTERING.equals(this.messageModel)) {
-            final ClientId clientId = pushConsumer.getClientId();
-            try {
-                if (this.started.compareAndSet(true, false)) {
-                    log.info("Begin to shutdown the ONS push consumer in {} mode, clientId={}", messageModel, clientId);
-                    this.pullConsumer.stopAsync().awaitTerminated();
-                    log.info("Shutdown ONS push consumer in {} mode successfully, clientId={}", messageModel, clientId);
-                    return;
-                }
-                log.info("ONS push consumer in {} mode has been shutdown before, clientId={}", messageModel, clientId);
-            } catch (Throwable t) {
-                log.error("Failed to shutdown the ONS push consumer in {} mode, clientId={}", messageModel, clientId);
-                throw new ONSClientException(t);
-            }
-        }
-        final ClientId clientId = pullConsumer.getClientId();
-        try {
-            if (this.started.compareAndSet(true, false)) {
-                log.info("Begin to shutdown the ONS push consumer in {} mode, clientId={}", messageModel, clientId);
-                this.pullConsumer.stopAsync().awaitTerminated();
-                log.info("Shutdown ONS push consumer in {} mode successfully, clientId={}", messageModel, clientId);
-                return;
-            }
-            log.info("ONS push consumer in {} mode has been shutdown before, clientId={}", messageModel, clientId);
-        } catch (Throwable t) {
-            log.error("Failed to shutdown the ONS push consumer in {} mode, clientId={}", messageModel, clientId);
-            throw new ONSClientException(t);
-        }
     }
 }
