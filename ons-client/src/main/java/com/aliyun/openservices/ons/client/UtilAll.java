@@ -2,8 +2,10 @@ package com.aliyun.openservices.ons.client;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
+import com.aliyun.openservices.ons.api.ExpressionType;
 import com.aliyun.openservices.ons.api.Message;
 import com.aliyun.openservices.ons.api.MessageAccessor;
+import com.aliyun.openservices.ons.api.MessageSelector;
 import com.aliyun.openservices.ons.api.SystemProperties;
 import com.aliyun.openservices.ons.api.exception.ONSClientException;
 import com.google.common.base.Joiner;
@@ -12,6 +14,8 @@ import java.util.Properties;
 import java.util.regex.Pattern;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.rocketmq.client.apis.ClientServiceProvider;
+import org.apache.rocketmq.client.apis.consumer.FilterExpression;
+import org.apache.rocketmq.client.apis.consumer.FilterExpressionType;
 import org.apache.rocketmq.client.apis.message.MessageBuilder;
 import org.apache.rocketmq.client.apis.message.MessageView;
 import org.apache.rocketmq.client.java.message.MessageViewImpl;
@@ -31,6 +35,13 @@ public class UtilAll {
 
     public static boolean validateNameServerEndpoint(String endpoint) {
         return StringUtils.isNoneBlank(endpoint) && NAME_SERVER_ENDPOINT_PATTERN.matcher(endpoint).matches();
+    }
+
+    public static FilterExpression convertFilterExpression(MessageSelector selector) {
+        if (ExpressionType.TAG.equals(selector.getType())) {
+            return new FilterExpression(selector.getSubExpression());
+        }
+        return new FilterExpression(selector.getSubExpression(), FilterExpressionType.SQL92);
     }
 
     public static Message convertMessage(MessageView messageView) {
