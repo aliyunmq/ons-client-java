@@ -15,6 +15,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.rocketmq.client.apis.consumer.ConsumeResult;
 import org.apache.rocketmq.client.apis.consumer.FilterExpression;
 import org.apache.rocketmq.client.apis.consumer.MessageListener;
+import org.apache.rocketmq.client.java.impl.SettingsAccessor;
 import org.apache.rocketmq.client.java.misc.ClientId;
 import org.apache.rocketmq.client.java.misc.ThreadFactoryImpl;
 
@@ -84,6 +85,13 @@ public class ONSPushConsumer extends ClientAbstract {
         this.pushConsumer = new PushConsumerImpl(clientConfiguration, consumerGroup, new HashMap<>(),
             messageListener, maxCachedMessagesQuantity, maxCachedMessageSizeInMib * 1024 * 1024,
             consumptionThreadsAmount);
+        final String maxReconsumeTimesProp = properties.getProperty(PropertyKeyConst.MaxReconsumeTimes);
+        if (StringUtils.isNoneBlank(maxReconsumeTimesProp)) {
+            int maxConsumptionAttempts = 1 + Integer.parseInt(maxReconsumeTimesProp);
+            final RetryPolicyImpl impl = new RetryPolicyImpl(maxConsumptionAttempts);
+            SettingsAccessor.setRetryPolicy(pushConsumer.getPushConsumerSettings(), impl);
+        }
+
         // For broadcasting consumption mode
         this.pullConsumer = new PullConsumerImplWithOffsetStore(clientConfiguration, consumerGroup, false,
             Duration.ofSeconds(5), maxCachedMessagesQuantity, Integer.MAX_VALUE,

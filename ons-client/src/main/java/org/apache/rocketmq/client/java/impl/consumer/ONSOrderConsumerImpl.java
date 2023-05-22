@@ -33,7 +33,9 @@ public class ONSOrderConsumerImpl extends ONSPushConsumer implements OrderConsum
         this.filterExpressionTable = new HashMap<>();
         this.messageOrderListenerTable = new HashMap<>();
         // Broadcast consumption by order consumers will degenerate into unordered consumption.
-        pushConsumer.getPushConsumerSettings().fifo = messageModel.equals(MessageModel.CLUSTERING);
+        if (messageModel.equals(MessageModel.CLUSTERING)) {
+            pushConsumer.getPushConsumerSettings().setFifo(true);
+        }
     }
 
     @Override
