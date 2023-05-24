@@ -33,6 +33,9 @@ public class ONSPushConsumerImpl extends ONSPushConsumer implements Consumer {
         super(properties);
         this.filterExpressionTable = new HashMap<>();
         this.messageListenerTable = new HashMap<>();
+        if (messageModel.equals(MessageModel.CLUSTERING)) {
+            pushConsumer.getPushConsumerSettings().setFifo(false);
+        }
     }
 
     @Override
