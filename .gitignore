@@ -12,6 +12,7 @@ out/
 dist/
 release/
 deploy/
+dependency-reduced-pom.xml
 
 # Maven target directory
 */target/
