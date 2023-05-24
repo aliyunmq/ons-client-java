@@ -28,20 +28,12 @@ public class PushConsumerExample {
         properties.put(PropertyKeyConst.NAMESRV_ADDR, "yourNameSrvAddr");
         Consumer consumer = ONSFactory.createConsumer(properties);
         // 订阅第一个 Topic 。
-        String topicA = "yourTopicA";
+        String topic = "yourTopic";
         // 订阅多个 Tag 。
-        consumer.subscribe(topicA, "TagA0||TagA1", (message, context) -> {
-            logger.info("Message received, topic={}, messageId={}", topicA, message.getMsgID());
+        consumer.subscribe(topic, "yourMessageTag", (message, context) -> {
+            logger.info("Message received, topic={}, messageId={}", topic, message.getMsgID());
             return Action.CommitMessage;
         });
-
-        // 订阅另外一个 Topic 。
-        String topicB = "yourTopicB";
-        consumer.subscribe(topicB, "tagB0||tagB1", (message, context) -> {
-            logger.info("Message received, topic={}, messageId={}", topicB, message.getMsgID());
-            return Action.CommitMessage;
-        });
-
         consumer.start();
     }
 }
