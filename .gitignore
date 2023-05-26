@@ -12,6 +12,7 @@ out/
 dist/
 release/
 deploy/
+dependency-reduced-pom.xml
 
 # Maven target directory
 */target/
@@ -50,3 +51,6 @@ Thumbs.db
 # Maven plugin files
 log/
 *.log
+
+# Redundant Logback configuration files
+logback.xml

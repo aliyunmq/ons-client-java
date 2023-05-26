@@ -64,6 +64,11 @@
                             </transformers>
                             <filters>
                                 <filter>
+                                    <excludes>
+                                        <exclude>logback.xml</exclude>
+                                    </excludes>
+                                </filter>
+                                <filter>
                                     <artifact>com.google.protobuf:protobuf-java</artifact>
                                     <excludes>
                                         <exclude>google/**/*.proto</exclude>

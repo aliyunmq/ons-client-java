@@ -27,13 +27,11 @@ import org.slf4j.LoggerFactory;
 public class ONSPullConsumerImpl extends ClientAbstract implements PullConsumer {
     private static final Logger log = LoggerFactory.getLogger(ONSPullConsumerImpl.class);
 
-    // TODO
-    private static final int DEFAULT_MAX_CACHED_MESSAGE_AMOUNT = 2000;
+    private static final int DEFAULT_MAX_CACHED_MESSAGE_AMOUNT = 10000;
     private static final int MAX_MAX_CACHED_MESSAGE_AMOUNT = 50000;
     private static final int MIN_MAX_CACHED_MESSAGE_AMOUNT = 100;
 
-    // TODO
-    private static final int DEFAULT_MAX_CACHED_MESSAGE_SIZE_IN_MIB = 200;
+    private static final int DEFAULT_MAX_CACHED_MESSAGE_SIZE_IN_MIB = 100;
     private static final int MAX_MAX_CACHED_MESSAGE_SIZE_IN_MIB = 1024;
     private static final int MIN_MAX_CACHED_MESSAGE_SIZE_IN_MIB = 16;
 
