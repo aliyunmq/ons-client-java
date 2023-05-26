@@ -114,7 +114,7 @@ public class ONSOrderConsumerImpl extends ONSPushConsumer implements OrderConsum
             }
             log.warn("ONS order consumer[broadcasting] has been shutdown before, clientId={}", clientId);
         } catch (Throwable t) {
-            log.error("Failed to shutdown the ONS order consumer[clustering], clientId={}", clientId, t);
+            log.error("Failed to shutdown the ONS order consumer[broadcasting], clientId={}", clientId, t);
         }
     }
 
