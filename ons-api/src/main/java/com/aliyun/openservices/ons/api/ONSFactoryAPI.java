@@ -1,6 +1,5 @@
 package com.aliyun.openservices.ons.api;
 
-import com.aliyun.openservices.ons.api.batch.BatchConsumer;
 import com.aliyun.openservices.ons.api.order.OrderConsumer;
 import com.aliyun.openservices.ons.api.order.OrderProducer;
 import com.aliyun.openservices.ons.api.transaction.LocalTransactionChecker;
@@ -26,14 +25,6 @@ public interface ONSFactoryAPI {
      * @return {@code Consumer}实例，用于订阅Topic进行消息消费
      */
     Consumer createConsumer(final Properties properties);
-
-    /**
-     * 根据自定义的属性创建一个支持批量消费的{@code BatchConsumer}实例，具体支持的属性详见{@link PropertyKeyConst}
-     *
-     * @param properties 构造{@code BatchConsumer}实例的属性
-     * @return {@code BatchConsumer}实例，用于订阅Topic进行批量的消息消费
-     */
-    BatchConsumer createBatchConsumer(final Properties properties);
 
     /**
      * 根据自定义的属性创建一个发送顺序消息的{@code OrderProducer}实例，具体支持的属性详见{@link PropertyKeyConst}

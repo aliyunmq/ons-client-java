@@ -1,6 +1,5 @@
 package com.aliyun.openservices.ons.api;
 
-import com.aliyun.openservices.ons.api.batch.BatchConsumer;
 import com.aliyun.openservices.ons.api.order.OrderConsumer;
 import com.aliyun.openservices.ons.api.order.OrderProducer;
 import com.aliyun.openservices.ons.api.transaction.LocalTransactionChecker;
@@ -165,32 +164,6 @@ public class ONSFactory {
     public static Consumer createConsumer(final Properties properties) {
         return onsFactory.createConsumer(properties);
     }
-
-    /**
-     * 创建BatchConsumer
-     * <p>
-     * <code>properties</code>应该至少包含以下几项配置内容:
-     * <ol>
-     *     <li>{@link PropertyKeyConst#GROUP_ID}</li>
-     *     <li>{@link PropertyKeyConst#AccessKey}</li>
-     *     <li>{@link PropertyKeyConst#SecretKey}</li>
-     *     <li>{@link PropertyKeyConst#ONSAddr}</li>
-     * </ol>
-     * 以下为可选配置项:
-     * <ul>
-     *     <li>{@link PropertyKeyConst#ConsumeThreadNums}</li>
-     *     <li>{@link PropertyKeyConst#ConsumeTimeout}</li>
-     *     <li>{@link PropertyKeyConst#ConsumeMessageBatchMaxSize}</li>
-     *     <li>{@link PropertyKeyConst#OnsChannel}</li>
-     * </ul>
-     *
-     * @param properties BatchConsumer的配置参数
-     * @return {@code BatchConsumer} 实例
-     */
-    public static BatchConsumer createBatchConsumer(final Properties properties) {
-        return onsFactory.createBatchConsumer(properties);
-    }
-
 
     /**
      * 创建顺序Consumer
