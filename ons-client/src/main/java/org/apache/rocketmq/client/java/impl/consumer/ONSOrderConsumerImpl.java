@@ -35,7 +35,10 @@ public class ONSOrderConsumerImpl extends ONSPushConsumer implements OrderConsum
         // Broadcast consumption by order consumers will degenerate into unordered consumption.
         if (messageModel.equals(MessageModel.CLUSTERING)) {
             pushConsumer.getPushConsumerSettings().setFifo(true);
+            return;
         }
+        log.warn("The order mode of broadcast consumption will not take effect and will degenerate into the " +
+            "concurrent mode of broadcast consumption, clientId={}", clientId);
     }
 
     @Override
