@@ -4,7 +4,6 @@ import com.aliyun.openservices.ons.api.Consumer;
 import com.aliyun.openservices.ons.api.ONSFactoryAPI;
 import com.aliyun.openservices.ons.api.Producer;
 import com.aliyun.openservices.ons.api.PullConsumer;
-import com.aliyun.openservices.ons.api.batch.BatchConsumer;
 import com.aliyun.openservices.ons.api.order.OrderConsumer;
 import com.aliyun.openservices.ons.api.order.OrderProducer;
 import com.aliyun.openservices.ons.api.transaction.LocalTransactionChecker;
@@ -24,11 +23,6 @@ public class ONSFactoryImpl implements ONSFactoryAPI {
     @Override
     public Consumer createConsumer(Properties properties) {
         return new ONSPushConsumerImpl(properties);
-    }
-
-    @Override
-    public BatchConsumer createBatchConsumer(Properties properties) {
-        throw new UnsupportedOperationException("Batch consumer is not supported");
     }
 
     @Override
