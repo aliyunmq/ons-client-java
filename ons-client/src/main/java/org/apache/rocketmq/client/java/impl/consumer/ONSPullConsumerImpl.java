@@ -2,6 +2,7 @@ package org.apache.rocketmq.client.java.impl.consumer;
 
 import com.aliyun.openservices.ons.api.Message;
 import com.aliyun.openservices.ons.api.PropertyKeyConst;
+import com.aliyun.openservices.ons.api.PropertyValueConst;
 import com.aliyun.openservices.ons.api.PullConsumer;
 import com.aliyun.openservices.ons.api.TopicPartition;
 import com.aliyun.openservices.ons.api.exception.ONSClientException;
@@ -45,6 +46,13 @@ public class ONSPullConsumerImpl extends ClientAbstract implements PullConsumer 
         final String consumerGroup = properties.getProperty(PropertyKeyConst.GROUP_ID);
         if (StringUtils.isBlank(consumerGroup)) {
             throw new ONSClientException("Group id is blank, please set it.");
+        }
+
+        final String messageModelProp = properties.getProperty(PropertyKeyConst.MessageModel,
+            PropertyValueConst.DEFAULT_MESSAGE_MODEL);
+        final MessageModel messageModel = MessageModel.valueOf(messageModelProp);
+        if (MessageModel.BROADCASTING.equals(messageModel)) {
+            throw new UnsupportedOperationException("Broadcasting consumption mode is not support for pull consumer");
         }
 
         final String maxCachedMessageAmountProp = properties.getProperty(PropertyKeyConst.MaxCachedMessageAmount);
