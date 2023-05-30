@@ -182,6 +182,7 @@ public class Message implements Serializable {
      */
     @Deprecated
     public void setMsgID(String msgId) {
+        this.systemProperties.setMsgId(msgId);
     }
 
     public Properties getUserProperties() {

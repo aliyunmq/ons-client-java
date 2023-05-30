@@ -17,6 +17,7 @@ import com.aliyun.openservices.ons.client.UtilAll;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
+import com.google.common.util.concurrent.MoreExecutors;
 import java.util.HashSet;
 import java.util.Properties;
 import java.util.concurrent.CompletableFuture;
@@ -137,12 +138,25 @@ public class ONSProducerImpl extends ClientAbstract implements Producer, OrderPr
 
     @Override
     public SendResult send(Message message) {
-        return send(UtilAll.convertMessage(message));
+        final SendResult sendResult = send(UtilAll.convertMessage(message));
+        message.setMsgID(sendResult.getMessageId());
+        return sendResult;
     }
 
     @Override
     public void sendOneway(Message message) {
-        producer.sendAsync(UtilAll.convertMessage(message));
+        final CompletableFuture<SendReceipt> future0 = producer.sendAsync(UtilAll.convertMessage(message));
+        final ListenableFuture<SendReceipt> future = FutureConverter.toListenableFuture(future0);
+        Futures.addCallback(future, new FutureCallback<SendReceipt>() {
+            @Override
+            public void onSuccess(SendReceipt result) {
+                message.setMsgID(result.getMessageId().toString());
+            }
+
+            @Override
+            public void onFailure(Throwable t) {
+            }
+        }, MoreExecutors.directExecutor());
     }
 
     @Override
@@ -154,7 +168,9 @@ public class ONSProducerImpl extends ClientAbstract implements Producer, OrderPr
         Futures.addCallback(future, new FutureCallback<SendReceipt>() {
             @Override
             public void onSuccess(SendReceipt sendReceipt) {
-                final SendResult sendResult = new SendResult(message.getTopic(), sendReceipt.getMessageId().toString());
+                final String messageId = sendReceipt.getMessageId().toString();
+                final SendResult sendResult = new SendResult(message.getTopic(), messageId);
+                message.setMsgID(messageId);
                 sendCallback.onSuccess(sendResult);
             }
 
@@ -175,7 +191,9 @@ public class ONSProducerImpl extends ClientAbstract implements Producer, OrderPr
 
     @Override
     public SendResult send(Message message, String shardingKey) {
-        return send(UtilAll.convertMessage(message, shardingKey));
+        final SendResult sendResult = send(UtilAll.convertMessage(message, shardingKey));
+        message.setMsgID(sendResult.getMessageId());
+        return sendResult;
     }
 
     @Override
@@ -189,6 +207,7 @@ public class ONSProducerImpl extends ClientAbstract implements Producer, OrderPr
         try {
             final SendReceipt sendReceipt = producer.send(msg, transaction);
             sendResult = new SendResult(message.getTopic(), sendReceipt.getMessageId().toString());
+            message.setMsgID(sendResult.getMessageId());
         } catch (Throwable t) {
             throw new ONSClientException(t);
         }
