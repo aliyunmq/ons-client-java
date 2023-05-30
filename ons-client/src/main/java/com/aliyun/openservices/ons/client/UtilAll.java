@@ -103,18 +103,18 @@ public class UtilAll {
         checkNotNull(body, "Message body should not be null");
         messageBuilder.setBody(body);
         final String tag = message.getTag();
-        if (null != tag) {
+        if (StringUtils.isNotBlank(tag)) {
             messageBuilder.setTag(tag);
         }
         final String key = message.getKey();
-        if (null != key) {
+        if (StringUtils.isNotBlank(key)) {
             messageBuilder.setKeys(key);
         }
         final long startDeliverTime = message.getStartDeliverTime();
         if (startDeliverTime > 0) {
             messageBuilder.setDeliveryTimestamp(startDeliverTime);
         }
-        if (null != messageGroup) {
+        if (StringUtils.isNotBlank(messageGroup)) {
             messageBuilder.setMessageGroup(messageGroup);
         }
         return messageBuilder.build();
