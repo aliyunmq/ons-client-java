@@ -100,7 +100,9 @@ public class UtilAll {
             messageBuilder.addProperty(propertyName, userProperties.getProperty(propertyName));
         }
         final byte[] body = message.getBody();
-        checkNotNull(body, "Message body should not be null");
+        if (null == body) {
+            throw new ONSClientException("Message body should not be null");
+        }
         messageBuilder.setBody(body);
         final String tag = message.getTag();
         if (StringUtils.isNotBlank(tag)) {
