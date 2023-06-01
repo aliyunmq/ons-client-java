@@ -88,6 +88,9 @@ public class UtilAll {
     }
 
     public static org.apache.rocketmq.client.apis.message.Message convertMessage(Message message, String messageGroup) {
+        if (null == message) {
+            throw new ONSClientException("Message should not be null");
+        }
         checkNotNull(message, "Message should not be null");
         MessageBuilder messageBuilder = provider.newMessageBuilder();
         final String topic = message.getTopic();
