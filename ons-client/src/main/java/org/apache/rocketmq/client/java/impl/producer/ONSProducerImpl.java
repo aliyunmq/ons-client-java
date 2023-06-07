@@ -21,13 +21,11 @@ import com.google.common.util.concurrent.MoreExecutors;
 import java.util.HashSet;
 import java.util.Properties;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 import net.javacrumbs.futureconverter.java8guava.FutureConverter;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.rocketmq.client.apis.producer.SendReceipt;
@@ -131,7 +129,7 @@ public class ONSProducerImpl extends ClientAbstract implements Producer, OrderPr
         try {
             final SendReceipt sendReceipt = future.get(sendMessageTimeoutMillis, TimeUnit.MILLISECONDS);
             return new SendResult(message.getTopic(), sendReceipt.getMessageId().toString());
-        } catch (TimeoutException | InterruptedException | ExecutionException t) {
+        } catch (Throwable t) {
             throw new ONSClientException(t);
         }
     }
