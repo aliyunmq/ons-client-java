@@ -77,7 +77,10 @@ public class UtilAll {
         }
         systemProperties.setPartitionOffset(impl.getOffset());
         final MessageQueueImpl mq = impl.getMessageQueue();
-        systemProperties.setPartition(UtilAll.brokerNameQueueIdToPartition(mq.getBroker().getName(), mq.getQueueId()));
+        if (null != mq) {
+            final String partition = UtilAll.brokerNameQueueIdToPartition(mq.getBroker().getName(), mq.getQueueId());
+            systemProperties.setPartition(partition);
+        }
         final Properties userProperties = new Properties();
         userProperties.putAll(impl.getProperties());
         return MessageAccessor.message(messageView.getTopic(), body, systemProperties, userProperties);
