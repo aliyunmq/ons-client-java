@@ -43,7 +43,7 @@ public class TopicMessageQueueChangeListenerImpl implements TopicMessageQueueCha
                     addedMqs.add(mq);
                 }
             }
-            pullConsumer.assign(latestSubscriptions);
+            pullConsumer.assign0(latestSubscriptions);
             for (MessageQueue mq : addedMqs) {
                 final Optional<Long> optionalOffset = pullConsumer.readOffset((MessageQueueImpl) mq);
                 if (!optionalOffset.isPresent()) {
@@ -62,6 +62,7 @@ public class TopicMessageQueueChangeListenerImpl implements TopicMessageQueueCha
                     log.error("Failed to seek offset, mq={}, offset={}, clientId={}", mq, offset, clientId, t);
                 }
             }
+            pullConsumer.scanner.signal();
         }
     }
 }
